@@ -25,12 +25,10 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, shift_reg_port port, shift
 }
 
 void seven_seg_set_val(seven_seg *sseg, char val[])
-{
-    assert(len(val) == sseg->num_seg);
-    
+{    
     for (int i = 0; i < sseg->num_seg; i++)
     {
-        sseg->num_seg[i] = convert(char_to_generic(val[i]), sseg->table);
+        sseg->val[i] = convert(char_to_generic(val[i]), sseg->table);
     }
 }
 
@@ -39,13 +37,13 @@ void seven_seg_loop(seven_seg *sseg)
     uint8_t cnt = sseg->num_seg;
     do
     {
-        if (seven_seg_loop(sseg)) {
+        if (seven_seg_loop_int(sseg)) {
             return;
         }
     } while (cnt);
 }
 
-bool seven_seg_loop(seven_seg *sseg)
+int seven_seg_loop_int(seven_seg *sseg)
 {
     *sseg->port &= ~(1<<sseg->seg_cat[sseg->curr]);
 
@@ -56,9 +54,9 @@ bool seven_seg_loop(seven_seg *sseg)
         shift_reg_write(sseg->seg_ano,sseg->val[sseg->curr]);
 
         *sseg->port |= (1<<sseg->seg_cat[sseg->curr]);
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -154,7 +152,7 @@ uint8_t convert(uint8_t v, uint8_t table[])
             {
                 result |= (1 << table[i]);
             }
-            mask <<= 1
+            mask <<= 1;
         }
     }
     return result;
