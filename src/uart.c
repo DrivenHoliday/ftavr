@@ -6,7 +6,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define UART_RINGBUF_SIZE (32)
+#define UART_RINGBUF_SIZE (128)
 
 static char uart_ringbuf[UART_RINGBUF_SIZE];
 static uint8_t uart_rpos = 0;
