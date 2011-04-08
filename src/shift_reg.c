@@ -1,6 +1,6 @@
 #include "shift_reg.h"
 
-void shift_reg_init(shift_reg *reg, shift_reg_port port, shift_reg_pin ser, shift_reg_pin sck, shift_reg_pin rck)
+void shift_reg_init(shift_reg *reg, mc_port port, mc_pin ser, mc_pin sck, mc_pin rck)
 {
     reg->port = port;
     reg->ser = ser;
@@ -10,7 +10,7 @@ void shift_reg_init(shift_reg *reg, shift_reg_port port, shift_reg_pin ser, shif
     shift_reg_write(reg,0); 
 }
 
-static void pulse(shift_reg_port port, shift_reg_pin pin)
+static void pulse(mc_port port, mc_pin pin)
 {
     *port |= (1<<pin);
     *port &= ~(1<<pin);

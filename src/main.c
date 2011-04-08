@@ -4,93 +4,111 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 
+#include <avr/delay.h>
+
 #define BAUD 19200
 #include <util/setbaud.h>
 
 #include "shift_reg.h"
 #include "seven_seg.h"
 #include "uart.h"
-
-void adc_init(void)
-{
-    ADCSRA = (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
-    ADCSRA |= (1<<ADIE) | (1<<ADEN);
-}
-
-void adc_read(uint8_t channel)
-{
-    // Kanal waehlen, ohne andere Bits zu beeinflußen
-    ADMUX = (ADMUX & ~(0x1F)) | (channel & 0x1F);
-    ADCSRA |= (1<<ADSC);
-}
+#include "types.h"
 
 static seven_seg sseg;
 
-ISR(TIMER0_OVF_vect)
-{
-    seven_seg_loop(&sseg);
-}
-
-ISR(ADC_vect)
-{
-    static uint16_t avg = 0;
-    static uint8_t avg_n = 0;
-    float u,r,t;
-
-    avg += ADCW;
-
-    if(++avg_n>79)
-    {
-        u = 5.f*(((float)avg/(float)avg_n)/1024.f);
-        r = ((5.f*3.9f)/u)-3.9f;
-        t = 25.f+2000.f*(sqrt(48425.f*r-9616.f)-197.f)/1937.f;
-
-        uart_buf_putf(t);
-        uart_buf_putc('\n');
-
-        seven_seg_set_val(&sseg, (uint8_t)t);
-
-        avg = avg_n = 0;
-    }
-
-    adc_read(2);
-}
-
 int main(void)
 {
-    uart_init(UBRR_VALUE);
-
-    set_sleep_mode(SLEEP_MODE_IDLE);
-    sleep_enable();
+const uint8_t delay= 500;
 
     shift_reg reg;
 
+//TODO: Use correct C syntax
+    char play[] = "Play";
+    uint8_t n = 0;
+    
     DDRC  = 0xff;
     PORTC = 0x0;
+    
+    DDRD = 0xff;
+    PORTD = 0x00;
 
-    shift_reg_init(&reg, &PORTC, PC2, PC1, PC0);
+    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);
+    uart_init(UBRR_VALUE);
 
-    sseg.num_seg = 2;
-    sseg.port = &PORTC;
-    sseg.seg_ano = &reg;
-    sseg.seg_cat[0] = PC3;
-    sseg.seg_cat[1] = PC4;
-    seven_seg_init(&sseg);
-    seven_seg_set_val(&sseg, 0);
+    //PORTD |= (1 << PD4);
 
-    TCCR0 = (1<<CS02);
-    TIMSK |= (1<<TOIE0);
+    //while(1) {PORTD = ~PORTD; _delay_ms(1000);}
+    
+ 
+    ///PORTC &= ~(1 << PC7); //LED an
+    // PORTC |= (1 << PC7);
+    
+    //shift_reg_write(&reg, 0/*0b11101111*/);
+    
+    while(1);
+    while(1) {
+    for(n = 0; n<5; ++n)
+    {
+    PORTC |= (1 << PC3);
+    _delay_ms(delay);
+    PORTC &= ~(1 << PC3);
+    PORTC |= (1 << PC4);
+    _delay_ms(delay);
+    PORTC &= ~(1 << PC4);
+    PORTC |= (1 << PC5);
+    _delay_ms(delay);
+    PORTC &= ~(1 << PC5);
+    PORTC |= (1 << PC6);
+    _delay_ms(delay);
+    PORTC &= ~(1 << PC6);
+    uart_puts("foo");
+    }
+    }
+//    PORTC |= (1 << PC6);
+    ///*
+    mc_pin seg_cat[] = { PC3, PC4, PC5, PC6 };
+    uint8_t table[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    
+    seven_seg_init(&sseg, 4, &PORTC, &reg, seg_cat, table, 1);
 
-    adc_init();
-    adc_read(2);
+    uint8_t vals[] = {0b11110111, 0b11111011, 0b11111101, 0b11111110 };
 
+    seven_seg_set_val(&sseg, vals);
+//    seven_seg_set_chr(&sseg, play);
     sei();
-
     while(1)
     {
-        sleep_cpu();
+        seven_seg_loop(&sseg);
+        _delay_ms(delay);
     }
-
+//*/
     /* wird nie erreicht */
     return 0;
+}
+
+uint8_t* generateTable(seven_seg *sseg)
+{
+    uint8_t table[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    uint8_t test[] = {0, 0, 0, 0};
+    
+    uint8_t testDisplay = 0;
+    uint8_t testSegment;
+
+
+    for (uint8_t i = 0; i < 4; i++)
+    {
+    
+    
+        //TODO: As long as the "define next segment" button is not pushed
+        while (1)
+        {
+            //TODO: As long as the "test with next segment" button is pushed
+            testSegment++;
+            test[testDisplay] = 1 << (testSegment % 8);
+        }
+    }
+    
+    
+    
+    
 }
