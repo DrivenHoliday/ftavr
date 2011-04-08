@@ -4,12 +4,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[])
+#include <avr/delay.h>
+
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[], uint8_t inverted)
 {
     sseg->num_seg = num_seg;
     sseg->port = port;
     sseg->seg_ano = seg_ano;
-    //TODO: cat & table?
+    sseg->inverted = inverted;
+    memcpy(sseg->seg_cat, seg_cat, num_seg);
+    memcpy(sseg->table, table, 8);
 
     uint8_t n=0;
 
@@ -22,13 +26,27 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *s
         sseg->val[n] = 0;
         *sseg->port &= ~(1<<sseg->seg_cat[n]);
     }
+    
+    for (int i = 0; i < sseg->num_seg; i++) {
+    uart_buf_puti8(sseg->seg_cat[i]);
+    }
+    
+    for (int i = 0; i < 8; i++) {
+    uart_buf_puti8(sseg->table[i]);
+    }
 }
 
 void seven_seg_set_chr(seven_seg *sseg, char val[])
 {    
     for (int i = 0; i < sseg->num_seg; i++)
     {
-        sseg->val[i] = convert(char_to_generic(val[i]), sseg->table);
+        if (sseg->inverted)
+        {
+            sseg->val[i] = ~convert(char_to_generic(val[i]), sseg->table);
+        } else
+        {
+            sseg->val[i] = convert(char_to_generic(val[i]), sseg->table);
+        }
     }
 }
 
@@ -40,31 +58,33 @@ void seven_seg_set_val(seven_seg *sseg, uint8_t val[])
     }
 }
 
+int seven_seg_loop_int(seven_seg *sseg)
+{
+    return 0;
+}
+
 void seven_seg_loop(seven_seg *sseg)
 {
+    //*sseg->port &= ~(1<<sseg->seg_cat[sseg->curr]);
+
+    _delay_ms(1000);
+
+    sseg->curr = (sseg->curr + 1) % sseg->num_seg;
+
+    //if(sseg->val[sseg->curr])
+    //{
+        //shift_reg_write(sseg->seg_ano,sseg->val[sseg->curr]);
+
+        //*sseg->port |= (1<<sseg->seg_cat[sseg->curr]);
+    //}
+    /*
     uint8_t cnt = sseg->num_seg;
     do
     {
         if (seven_seg_loop_int(sseg)) {
             return;
         }
-    } while (cnt);
-}
-
-int seven_seg_loop_int(seven_seg *sseg)
-{
-    *sseg->port &= ~(1<<sseg->seg_cat[sseg->curr]);
-
-    sseg->curr = (sseg->curr + 1) % sseg->num_seg;
-
-    if(sseg->val[sseg->curr])
-    {
-        shift_reg_write(sseg->seg_ano,sseg->val[sseg->curr]);
-
-        *sseg->port |= (1<<sseg->seg_cat[sseg->curr]);
-        return 1;
-    }
-    return 0;
+    } while (cnt);*/
 }
 
 /**
