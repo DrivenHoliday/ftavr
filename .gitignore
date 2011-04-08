@@ -1,9 +1,11 @@
+# avr-gcc crap
 src/.dep/
 *.eep
 *.elf
 *.hex
 *.lss
-*.map
-*.sym
 obj/
+*.map
 
+# Kate temp files
+*~
