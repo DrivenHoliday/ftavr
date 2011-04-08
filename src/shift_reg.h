@@ -5,7 +5,7 @@
 
 #include "types.h"
 
-struct shift_reg_t
+struct shift_reg_s
 {
     mc_port port;
     mc_pin ser;
@@ -13,7 +13,7 @@ struct shift_reg_t
     mc_pin rck;
 };
 
-typedef struct shift_reg_t shift_reg;
+typedef struct shift_reg_s shift_reg;
 
 void shift_reg_init(shift_reg *reg, mc_port port, mc_pin ser, mc_pin sck, mc_pin rck);
 void shift_reg_write(shift_reg *reg, uint8_t value);
