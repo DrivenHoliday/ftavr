@@ -69,7 +69,7 @@ const uint8_t delay= 500;
     mc_pin seg_cat[] = { PC3, PC4, PC5, PC6 };
     uint8_t table[] = {0, 1, 2, 3, 4, 5, 6, 7};
     
-    seven_seg_init(&sseg, 4, &PORTC, &reg, seg_cat, table, 1);
+    seven_seg_init(&sseg, 4, &PORTC, &reg, seg_cat, table, TRUE);
 
     uint8_t vals[] = {0b11110111, 0b11111011, 0b11111101, 0b11111110 };
 

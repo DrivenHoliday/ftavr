@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "shift_reg.h"
+#include "types.h"
 
 #define SEVEN_SEG_MAX_NUM_SEG (4)
 
@@ -16,7 +17,7 @@ struct seven_seg_t
     mc_pin seg_cat[SEVEN_SEG_MAX_NUM_SEG];
     
     uint8_t table[8];
-    uint8_t inverted;
+    boolean inverted;
     
     //private
     uint8_t curr;
@@ -25,7 +26,7 @@ struct seven_seg_t
 
 typedef struct seven_seg_t seven_seg;
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[], uint8_t inverted);
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[], boolean inverted);
 void seven_seg_set_chr(seven_seg *sseg, char val[]);
 void seven_seg_set_val(seven_seg *sseg, uint8_t val[]);
 void seven_seg_loop(seven_seg *sseg);
