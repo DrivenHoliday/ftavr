@@ -10,10 +10,10 @@
 struct seven_seg_t
 {
     uint8_t num_seg;
-    shift_reg_port port;
+    mc_port port;
     
     shift_reg *seg_ano;
-    shift_reg_pin seg_cat[SEVEN_SEG_MAX_NUM_SEG];
+    mc_pin seg_cat[SEVEN_SEG_MAX_NUM_SEG];
     
     uint8_t table[8];
     
@@ -24,8 +24,9 @@ struct seven_seg_t
 
 typedef struct seven_seg_t seven_seg;
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, shift_reg_port port, shift_reg *seg_ano, shift_reg_pin seg_cat[], uint8_t table[]);
-void seven_seg_set_val(seven_seg *sseg, char val[]);
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[]);
+void seven_seg_set_chr(seven_seg *sseg, char val[]);
+void seven_seg_set_val(seven_seg *sseg, uint8_t val[]);
 void seven_seg_loop(seven_seg *sseg);
 
 uint8_t char_to_generic(char c);

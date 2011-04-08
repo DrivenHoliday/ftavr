@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, shift_reg_port port, shift_reg *seg_ano, shift_reg_pin seg_cat[], uint8_t table[])
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[])
 {
     sseg->num_seg = num_seg;
     sseg->port = port;
@@ -24,11 +24,19 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, shift_reg_port port, shift
     }
 }
 
-void seven_seg_set_val(seven_seg *sseg, char val[])
+void seven_seg_set_chr(seven_seg *sseg, char val[])
 {    
     for (int i = 0; i < sseg->num_seg; i++)
     {
         sseg->val[i] = convert(char_to_generic(val[i]), sseg->table);
+    }
+}
+
+void seven_seg_set_val(seven_seg *sseg, uint8_t val[])
+{
+    for (int i = 0; i < sseg->num_seg; i++)
+    {
+        sseg->val[i] = val[i];
     }
 }
 
