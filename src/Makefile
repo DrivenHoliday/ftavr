@@ -77,7 +77,7 @@ OBJDIR = obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c uart.c seven_seg.c shift_reg.c
+SRC = $(TARGET).c uart.c seven_seg.c shift_reg.c button.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
