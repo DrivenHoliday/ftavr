@@ -20,12 +20,14 @@
 #define NUM_GOALS (2)
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
 
-#define DEFAULT_GOALS_PER_ROUND (99)
+#define DEFAULT_GOALS_PER_ROUND (10)
 #define DEFAULT_BEEPER (TRUE)
+#define DEFAULT_BEEP_TIME (05)
+#define DEFAULT_LOCK_TIME (20)
 
-#define NUMBER_OF_MENU_ENTRIES 2
+#define NUMBER_OF_MENU_ENTRIES (2)
 
-const char menu_entries[NUMBER_OF_MENU_ENTRIES][4] = { "Neu ", "Tore" };
+const char menu_entries[NUMBER_OF_MENU_ENTRIES][4] = { "Neu ", "Tore", "LocT", "BepT" };
 
 uint8_t menu_idx;
 button *active_buttons;
@@ -35,9 +37,11 @@ struct settings_s
 {
     uint8_t goals_per_round;
     boolean beeper;
+    uint8_t beep_time;
+    uint8_t lock_time;
 };
 
-static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER};
+static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME};
 
 static seven_seg sseg;
 
@@ -65,9 +69,9 @@ void ntostr(char *result, uint8_t n)
 void flash_sseg(void)
 {
     // Make atomic?
-    sseg.inverted = FALSE;
+    sseg.inverted = !sseg.inverted;
     _delay_ms(10);
-    sseg.inverted = TRUE;
+    sseg.inverted = !sseg.inverted;
 }
 
 void update_sseg(void)
@@ -172,6 +176,7 @@ ISR (TIMER0_COMP_vect)
 void update_menu(void)
 {
     char text[4];
+    uint8_t dots = 0;
     
     if(change_value)
     {
@@ -184,7 +189,20 @@ void update_menu(void)
             break;
         case 1:
             /* Tore */
+            //TODO: Insert value
             strncpy(text, "T 42", 4);
+            break;
+        case 2:
+            /* LocT */
+            //TODO: Insert value
+            strncpy(text, "LT42", 4);
+            dots = 0b10;
+            break;
+        case 3:
+            /* BepT */
+            //TODO: Insert value
+            strncpy(text, "BT42", 4);
+            dots = 0b10;
             break;
         default:
             //???? WTF
@@ -196,6 +214,7 @@ void update_menu(void)
         strncpy(text, menu_entries[menu_idx], 4);
     }
     seven_seg_set_chr(&sseg, text);
+    seven_seg_set_dot(&sseg, dots);
 }
 
 void chg_menu_idx(void *p)
@@ -219,18 +238,22 @@ void switch_to_game(void *p)
     update_sseg();
 }
 
-void chg_max_goals(int8_t change)
+void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
 {
-    uint8_t tore_tmp = 10; // REMOVE IF SETTINGS STRUCT IS IMPLEMENTED
-    int16_t new = tore_tmp + change;
-    if (new > 0 && new <= 99)
+    int16_t new = *value + change;
+    if (new >= lower && new <= upper)
     {
-        tore_tmp = new;
+        *value = new;
     }
     else
     {
         flash_sseg();
     }
+}
+
+void chg_time(uint8_t *time, int8_t change)
+{
+    chg_value(time, change, 0, 99);
 }
 
 void chg_menu_value(void *p)
@@ -245,7 +268,15 @@ void chg_menu_value(void *p)
             break;
         case 1:
             /* Tore */
-            chg_max_goals(chg);
+            chg_value(&settings.goals_per_round, chg, 1, 99);
+            break;
+        case 2:
+            /* LocT */
+            chg_time(settings.lock_time, chg);
+            break;
+        case 3:
+            /* BepT */
+            chg_time(settings.beep_time, chg);
             break;
         default:
             // WHAT TO FO HERE?
@@ -325,7 +356,7 @@ int main(void)
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */
     TCCR0 |= (1 << CS00) | (1 << CS01); /* Prescaler 64 */
-    OCR0 = 249; /* ((16000000/64)/1000) = 250 */
+    OCR0 = 249; /* ((16000000/64)/1000) = 250; decreased by one due of starting with zero */
     TIMSK |= (1<<OCIE0); /* activate timer */
 
     sei();
@@ -334,7 +365,7 @@ int main(void)
     {
         for(n = 0; n < 10; ++n)
         {
-            button_poll(&butt);
+            button_poll(active_buttons);
         }
         seven_seg_loop(&sseg);
     }
