@@ -19,6 +19,7 @@
 
 #define NUM_GOALS (2)
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
+#define NUM_DISPLAY_ELEMENTS (NUM_GOALS*DISPLAY_ELEMENTS_PER_GOAL)
 
 #define DEFAULT_GOALS_PER_ROUND (99)
 #define DEFAULT_BEEPER (TRUE)
@@ -34,6 +35,7 @@ static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER};
 static seven_seg sseg;
 
 static uint8_t goals[NUM_GOALS] = {0,0};
+static volatile uint8_t last_goal = 255;
 
 static volatile uint16_t beeper = 0;
 static volatile uint16_t locked = 0;
@@ -54,17 +56,41 @@ void ntostr(char *result, uint8_t n)
         strncpy(result,buf,2);
 }
 
-void update_sseg(void)
+void sseg_set_last_goal_dots(void)
 {
-    char stext[NUM_GOALS * DISPLAY_ELEMENTS_PER_GOAL];
+    uint8_t dots = 0;
     size_t n = 0;
     
-    for(;n < NUM_GOALS; ++n)
+    for(n = 0; n < NUM_GOALS; ++n)
+    {
+        dots <<= 2;
+        if(last_goal == n)
+        {    
+            dots |= 0b00000010;
+        }
+    }
+    
+    uart_buf_puti8(dots);
+    
+    seven_seg_set_dot(&sseg, dots);
+}
+
+void sseg_display_goals(void)
+{
+    char stext[NUM_DISPLAY_ELEMENTS];
+    size_t n = 0;
+    
+    for(n = 0; n < NUM_GOALS; ++n)
     {
         ntostr(stext+n*DISPLAY_ELEMENTS_PER_GOAL, goals[n]);
     }
     
     seven_seg_set_chr(&sseg, stext);
+    
+    if(!locked)
+    {
+        sseg_set_last_goal_dots();
+    }
 }
 
 void incgoal(void *p)
@@ -73,7 +99,7 @@ void incgoal(void *p)
     {
         goals[(size_t)p] += 1;
     }
-    update_sseg();
+    sseg_display_goals();
 }
 
 void decgoal(void *p)
@@ -82,7 +108,28 @@ void decgoal(void *p)
     {
         goals[(size_t)p] -= 1;
     }
-    update_sseg();
+    sseg_display_goals();
+}
+
+/* Timer 0 interrupt vector, called every 1 ms */
+ISR (TIMER0_COMP_vect)
+{    
+    if(beeper)
+    {
+        --beeper;
+        if(!beeper)
+        {
+            PORTD &= ~(1 << PD4);
+        }
+    }
+    if(locked)
+    {
+        --locked;
+        if (!locked)
+        {
+            sseg_set_last_goal_dots();
+        }
+    }
 }
 
 void goal(void *p)
@@ -92,6 +139,9 @@ void goal(void *p)
         if(!locked)
         {
             incgoal(p);
+            
+            last_goal = p;
+            
             seven_seg_set_dot(&sseg, 0b1111);
         
             if(settings.beeper)
@@ -116,41 +166,16 @@ void self_test()
     PORTC &= ~(1<<PC7); /* err LED on */
     PORTD |= (1<<PD4); /* beeper on */
     
-    for(;n < 250; ++n)
+    for(n = 0; n < 250; ++n)
     {
         seven_seg_loop(&sseg);
         _delay_ms(2);
     }
     
-    update_sseg();
+    sseg_display_goals();
     seven_seg_set_dot(&sseg, 0);
     PORTD &= ~(1<<PD4); /* beeper off */
     PORTC |= (1<<PC7); /* err LED off */
-}
-
-/*
- * Der Compare Interrupt Handler wird aufgerufen, wenn
- * TCNT0 = OCR0 = 250 - 1 
- * ist (250 Schritte), d.h. genau alle 1 ms
- */
-ISR (TIMER0_COMP_vect)
-{    
-    if(beeper)
-    {
-        --beeper;
-        if(!beeper)
-        {
-            PORTD &= ~(1 << PD4);
-        }
-    }
-    if(locked)
-    {
-        --locked;
-        if (!locked)
-        {
-            seven_seg_set_dot(&sseg, 0);
-        }
-    }
 }
 
 int main(void)
@@ -168,7 +193,7 @@ int main(void)
     button_init(&butt);
     
     shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
-    seven_seg_init(&sseg, NUM_GOALS * DISPLAY_ELEMENTS_PER_GOAL, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
+    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
     
     /* unused */
     DDRA = 0x0;
