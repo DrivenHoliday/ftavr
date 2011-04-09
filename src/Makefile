@@ -77,7 +77,7 @@ OBJDIR = obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c uart.c seven_seg.c shift_reg.c button.c
+SRC = $(TARGET).c uart.c seven_seg.c shift_reg.c button.c uart_cli.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -266,7 +266,7 @@ AVRDUDE_PROGRAMMER = stk500v2
 #AVRDUDE_PROGRAMMER = avrispmkII
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/ttyACM0
+AVRDUDE_PORT = /dev/ttyACM1
 #AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex

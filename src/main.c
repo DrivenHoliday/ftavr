@@ -70,8 +70,6 @@ void sseg_set_last_goal_dots(void)
         }
     }
     
-    uart_buf_puti8(dots);
-    
     seven_seg_set_dot(&sseg, dots);
 }
 
@@ -237,6 +235,12 @@ int main(void)
         for(n = 0; n < 10; ++n)
         {
             button_poll(&butt);
+            
+            char c;
+            if(uart_getc(&c))
+            {
+                uart_buf_putc(c);
+            }
         }
         seven_seg_loop(&sseg);
     }

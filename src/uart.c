@@ -6,44 +6,67 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define UART_RINGBUF_SIZE (128)
+#include "ringbuf.h"
 
-static char uart_ringbuf[UART_RINGBUF_SIZE];
-static uint8_t uart_rpos = 0;
-static uint8_t uart_wpos = 0;
+#define UART_RINGBUF_SIZE 128
+
+RINGBUF_DEFINE(char, UART_RINGBUF_SIZE);
+RINGBUF_CREATE(char, UART_RINGBUF_SIZE, out_buf, static volatile);
+RINGBUF_CREATE(char, UART_RINGBUF_SIZE, in_buf, static volatile);
 
 ISR(USART_UDRE_vect)
 {
-    if(uart_ringbuf[uart_rpos])
+    char c;
+    RINGBUF_READ(out_buf, c);
+    
+    if(c)
     {
-        uart_putc(uart_ringbuf[uart_rpos]);
-        uart_ringbuf[uart_rpos] = '\0';
-
-        if(!(++uart_rpos%UART_RINGBUF_SIZE))
-            uart_rpos = 0;
+        uart_putc(c);
+        RINGBUF_MARK(out_buf, '\0');
     }
     else
     {
-        UCSRB &= ~(1<<UDRIE);
+        UCSRB &= ~(1<<UDRIE);       
+    }
+}
+
+ISR(USART_RXC_vect)
+{
+    RINGBUF_WRITE(in_buf, UDR);
+}
+
+boolean uart_getc(char *c)
+{
+    RINGBUF_READ(in_buf, *c);
+    
+    if(*c)
+    {
+        RINGBUF_MARK(in_buf, '\0');
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;       
     }
 }
 
 void uart_init(uint16_t baudrate)
 {
-    uint8_t n=0;
-    for(;n<UART_RINGBUF_SIZE;++n) uart_ringbuf[n]='\0';
-
+    RINGBUF_INIT(out_buf);
+    RINGBUF_INIT(in_buf);
+    
     if(baudrate & 0x8000)
     {
-        UCSRA = (1<<U2X);  //Enable 2x speed
+        UCSRA = (1<<U2X);  /* Enable 2x speed */
         baudrate &= ~0x8000;
     }
 
     UBRRH = (uint8_t)(baudrate>>8);
     UBRRL = (uint8_t) baudrate;
 
-    UCSRB |= (1<<TXEN)|(1<<UDRIE);  // UART TX einschalten
-    UCSRC |= (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);  // Asynchron 8N1
+    UCSRB |= (1<<TXEN)|(1<<RXEN); /* activate UART TX/RX */
+    UCSRB |= (1<<UDRIE)|(1<<RXCIE); /* enable interrupts */
+    UCSRC |= (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);  /* asynchronous 8N1 */
 }
 
 void uart_putc(char c)
@@ -59,9 +82,7 @@ void uart_puts(const char *s)
 
 void uart_buf_putc(char c)
 {
-    uart_ringbuf[uart_wpos++] = c;
-    if(!(uart_wpos%UART_RINGBUF_SIZE))
-        uart_wpos = 0;
+    RINGBUF_WRITE(out_buf, c);
     UCSRB |= (1<<UDRIE);
 }
 
