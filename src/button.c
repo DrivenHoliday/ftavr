@@ -1,5 +1,6 @@
 #include "button.h"
 
+#include <assert.h>
 #include <string.h>
 
 void button_init(button *butt)
@@ -15,6 +16,7 @@ void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *
     butt->buttons[butt->num].payload = payload;
     
     ++butt->num;
+    assert(butt->num <= BUTTON_MAX_NUM_BUTTON);
 }
 
 void button_poll(button *butt)
