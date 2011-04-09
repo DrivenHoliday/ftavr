@@ -16,6 +16,7 @@
 #include "seven_seg.h"
 #include "types.h"
 #include "uart.h"
+#include "menu_entry.h"
 
 #define NUM_GOALS (2)
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
@@ -26,11 +27,9 @@
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
 
-const char menu_entries[][NUM_DISPLAY_ELEMENTS] = { "Go ?", "GL", "LT", "BT", "By" };
-const size_t NUMBER_OF_MENU_ENTRIES = sizeof(menu_entries) / NUM_DISPLAY_ELEMENTS;
-
 static uint8_t menu_idx;
 static button *active_buttons = NULL;
+static menu_entries entries;
 
 struct settings_s
 {
@@ -72,11 +71,10 @@ void ntostr(char *result, uint8_t n)
  */
 void loop_display(uint16_t ms)
 {
-    uint16_t n = ms / 2;
     while (ms)
     {
         seven_seg_loop(&sseg);
-        _delay_ms(2);
+        _delay_ms(1);
         --ms;
     }
 }
@@ -189,9 +187,7 @@ void goal(void *p)
 }
 
 void self_test()
-{
-    uint16_t n = 0;
-    
+{    
     uart_buf_puts("Hello!\n");
     
     seven_seg_set_chr(&sseg, "8888");
@@ -209,46 +205,12 @@ void self_test()
 
 void sseg_display_menu(void)
 {
-    char text[4];
-    strncpy(text, menu_entries[menu_idx], 2);
-    uint8_t dots = 0;
-
-    switch(menu_idx)
-    {
-    case 0:
-        /* Go */
-        strncpy(text + 2, " ?", 2);
-        dots = 0b10;
-        break;
-    case 1:
-        /* GL */
-        ntostr(text + 2, settings.goals_per_round);
-        break;
-    case 2:
-        /* LT */
-        ntostr(text + 2, settings.lock_time);
-        dots = 0b10;
-        break;
-    case 3:
-        /* BT */
-        ntostr(text + 2, settings.beep_time);
-        dots = 0b10;
-        break;
-    case 4:
-        /* By */
-        strncpy(text + 2, "NF", 2);
-        break;
-    default:
-        break;
-    }
-
-    seven_seg_set_chr(&sseg, text);
-    seven_seg_set_dot(&sseg, dots);
+    menu_entry_display(&entries, &sseg);
 }
 
 void chg_menu_idx(void *p)
 {
-    menu_idx = (menu_idx + ((int16_t) p)) % NUMBER_OF_MENU_ENTRIES;
+    menu_entry_chg_select(&entries, (int8_t) p);
     sseg_display_menu();
 }
 
@@ -278,43 +240,61 @@ void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
     }
 }
 
-void chg_time(uint8_t *time, int8_t change)
+void menu_value_left(void *p)
 {
-    chg_value(time, change, 0, 99);
+    menu_entry_left_click(&entries);
 }
 
-void chg_menu_value(void *p)
+void menu_value_right(void *p)
 {
-    boolean update = FALSE;
-    int16_t chg = (int16_t) p;
-    switch(menu_idx)
-    {
-    case 0:
-        /* Go */
-        break;
-    case 1:
-        /* GL */
-        chg_value(&settings.goals_per_round, chg, 1, 99);
-        update = TRUE;
-        break;
-    case 2:
-        /* LT */
-        update = TRUE;
-        chg_time(settings.lock_time, chg);
-        break;
-    case 3:
-        /* BT */
-        update = TRUE;
-        chg_time(settings.beep_time, chg);
-        break;
-    default:
-        break;
-    }
+    menu_entry_right_click(&entries);
+}
 
-    if (update)
-    {
-        sseg_display_menu();
-    }
+void menu_entry_value_gl_dec(void *p)
+{
+    chg_value((uint8_t*) p, -1, 1, 99);
+}
+
+void menu_entry_value_gl_inc(void *p)
+{
+    chg_value((uint8_t*) p, +1, 1, 99);
+}
+
+void menu_entry_value_dec(void *p)
+{
+    chg_value((uint8_t*) p, -1, 0, 99);
+}
+
+void menu_entry_value_inc(void *p)
+{
+    chg_value((uint8_t*) p, +1, 0, 99);
+}
+
+void menu_entry_get_value(void *p, char *ch, uint8_t *dots)
+{
+    ntostr(ch, (uint8_t) p);
+    (*dots) = 0;
+}
+
+void menu_entry_get_value_dot(void *p, char *ch, uint8_t *dots)
+{
+    menu_entry_get_value(p, ch, dots);
+    (*dots) = 0b0010;
+}
+
+void menu_entry_get_go(void *p, char *ch, uint8_t *dots)
+{
+    strncpy(ch, " ?", 2);
+    (*dots) = 0b0010;
+}
+
+void menu_entry_start(void *p)
+{
+
+    /*******************/
+    //TODO: START GAME //
+    /*******************/
+
 }
 
 int main(void)
@@ -377,8 +357,15 @@ int main(void)
     
     button_add(&menu, &PINB, PB2, switch_to_game, &butt);
 
-    button_add(&menu, &PINB, PB3, chg_menu_value, -1);
-    button_add(&menu, &PINB, PB4, chg_menu_value, +1);
+    button_add(&menu, &PINB, PB3, menu_value_left, -1);
+    button_add(&menu, &PINB, PB4, menu_value_right, +1);
+
+    /* Add menu entries */
+    menu_entry_init(&entries);
+    menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
+    menu_entry_add(&entries, "GL", menu_entry_get_value, menu_entry_value_gl_dec, menu_entry_value_gl_inc, &(settings.goals_per_round));
+    menu_entry_add(&entries, "Lt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.lock_time));
+    menu_entry_add(&entries, "Bt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.beep_time));
     
     /* Set by default the menu to active. */
     active_buttons = &menu;
