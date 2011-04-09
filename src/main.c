@@ -6,6 +6,7 @@
 #include <avr/io.h>
 
 #include <util/delay.h>
+#include <util/atomic.h>
 
 #define BAUD 19200
 #include <util/setbaud.h>
@@ -17,7 +18,7 @@
 #include "uart.h"
 
 static seven_seg sseg;
-uint8_t tore[2];
+static uint8_t tore[2];
 
 void update_sseg()
 {
@@ -43,6 +44,22 @@ void dector(void *p)
 {
     if(tore[(size_t)p] > 0) --tore[(size_t)p];
     update_sseg();
+}
+
+void tor(void *p)
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        if(!locked)
+        {
+            inctor(p);
+            seven_seg_set_dot(&sseg, 0b1111);
+        
+            beeper = 500;
+            locked = 2000;
+            PORTD |= (1<<PD4);
+        }
+    }
 }
 
 int main(void)
@@ -78,8 +95,8 @@ int main(void)
     
     button_init(&butt);
     
-    button_add(&butt, &PIND, PD2, inctor, 0);
-    button_add(&butt, &PIND, PD3, inctor, 1);
+    button_add(&butt, &PIND, PD2, tor, 0);
+    button_add(&butt, &PIND, PD3, tor, 1);
 
     button_add(&butt, &PINB, PB0, dector, 0);
     button_add(&butt, &PINB, PB1, inctor, 0);
