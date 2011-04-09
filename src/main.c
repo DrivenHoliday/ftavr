@@ -25,13 +25,13 @@
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
 
-#define NUMBER_OF_MENU_ENTRIES (2)
+#define NUMBER_OF_MENU_ENTRIES (4)
 
 const char menu_entries[NUMBER_OF_MENU_ENTRIES][4] = { "Neu ", "Tore", "LocT", "BepT" };
 
-uint8_t menu_idx;
-button *active_buttons;
-boolean change_value;
+static uint8_t menu_idx;
+static button *active_buttons = NULL;
+static boolean change_value;
 
 struct settings_s
 {
@@ -70,7 +70,7 @@ void flash_sseg(void)
 {
     // Make atomic?
     sseg.inverted = !sseg.inverted;
-    _delay_ms(10);
+    _delay_ms(100);
     sseg.inverted = !sseg.inverted;
 }
 
@@ -220,7 +220,7 @@ void update_menu(void)
 void chg_menu_idx(void *p)
 {
     change_value = FALSE;
-    menu_idx = menu_idx + ((int16_t) p) % NUMBER_OF_MENU_ENTRIES;
+    menu_idx = (menu_idx + ((int16_t) p)) % NUMBER_OF_MENU_ENTRIES;
     update_menu();
 }
 
@@ -352,6 +352,8 @@ int main(void)
 
     button_add(&menu, &PINB, PB3, chg_menu_value, -1);
     button_add(&menu, &PINB, PB4, chg_menu_value, +1);
+    
+    active_buttons = &butt;
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */
