@@ -17,100 +17,203 @@
 #include "types.h"
 #include "uart.h"
 
-static seven_seg sseg;
-static uint8_t tore[2];
+#define NUM_GOALS (2)
+#define DISPLAY_ELEMENTS_PER_GOAL (2)
 
-void update_sseg()
+#define DEFAULT_GOALS_PER_ROUND (99)
+#define DEFAULT_BEEPER (TRUE)
+
+struct settings_s
 {
-    static char stext[4];
-    static char buf[4];
+    uint8_t goals_per_round;
+    boolean beeper;
+};
+
+static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER};
+
+static seven_seg sseg;
+
+static uint8_t goals[NUM_GOALS] = {0,0};
+
+static volatile uint16_t beeper = 0;
+static volatile uint16_t locked = 0;
+
+void ntostr(char *result, uint8_t n)
+{
+    /* max val "255" + \0  = 4 chars*/
+    char buf[4];
     
-    itoa(tore[0],buf,10);
-    strncpy(stext,buf,2);
+    itoa(n,buf,10);
     
-    itoa(tore[1],buf,10);
-    strncpy(stext+2,buf,2);
+    if(n<10)
+    {
+        result[0] = ' ';
+        result[1] = buf[0];
+    }
+    else        
+        strncpy(result,buf,2);
+}
+
+void update_sseg(void)
+{
+    char stext[NUM_GOALS * DISPLAY_ELEMENTS_PER_GOAL];
+    size_t n = 0;
+    
+    for(;n < NUM_GOALS; ++n)
+    {
+        ntostr(stext+n*DISPLAY_ELEMENTS_PER_GOAL, goals[n]);
+    }
     
     seven_seg_set_chr(&sseg, stext);
 }
 
-void inctor(void *p)
+void incgoal(void *p)
 {
-    tore[(size_t)p] = (tore[(size_t)p] + 1) % 100;
+    if(goals[(size_t)p] < settings.goals_per_round)
+    {
+        goals[(size_t)p] += 1;
+    }
     update_sseg();
 }
 
-void dector(void *p)
+void decgoal(void *p)
 {
-    if(tore[(size_t)p] > 0) --tore[(size_t)p];
+    if(goals[(size_t)p] > 0)
+    {
+        goals[(size_t)p] -= 1;
+    }
     update_sseg();
 }
 
-void tor(void *p)
+void goal(void *p)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         if(!locked)
         {
-            inctor(p);
+            incgoal(p);
             seven_seg_set_dot(&sseg, 0b1111);
         
-            beeper = 500;
+            if(settings.beeper)
+            {
+                beeper = 500;
+                PORTD |= (1<<PD4); /* beeper on */   
+            }
             locked = 2000;
-            PORTD |= (1<<PD4);
+            
+        }
+    }
+}
+
+void self_test()
+{
+    uint16_t n = 0;
+    
+    uart_buf_puts("Hello!\n");
+    
+    seven_seg_set_chr(&sseg, "8888");
+    seven_seg_set_dot(&sseg, 0b1111);
+    PORTC &= ~(1<<PC7); /* err LED on */
+    PORTD |= (1<<PD4); /* beeper on */
+    
+    for(;n < 250; ++n)
+    {
+        seven_seg_loop(&sseg);
+        _delay_ms(2);
+    }
+    
+    update_sseg();
+    seven_seg_set_dot(&sseg, 0);
+    PORTD &= ~(1<<PD4); /* beeper off */
+    PORTC |= (1<<PC7); /* err LED off */
+}
+
+/*
+ * Der Compare Interrupt Handler wird aufgerufen, wenn
+ * TCNT0 = OCR0 = 250 - 1 
+ * ist (250 Schritte), d.h. genau alle 1 ms
+ */
+ISR (TIMER0_COMP_vect)
+{    
+    if(beeper)
+    {
+        --beeper;
+        if(!beeper)
+        {
+            PORTD &= ~(1 << PD4);
+        }
+    }
+    if(locked)
+    {
+        --locked;
+        if (!locked)
+        {
+            seven_seg_set_dot(&sseg, 0);
         }
     }
 }
 
 int main(void)
 {
-    const uint8_t delay= 2;
+    const mc_pin seg_cat[] = {PC3, PC4, PC5, PC6};
+    const uint8_t display_convert_table[] = {6, 3, 7, 4, 2, 1, 0, 5};
 
     shift_reg reg;
     button butt;
+    size_t n = 0;
     
-    const mc_pin seg_cat[] = {PC3, PC4, PC5, PC6};
-    const uint8_t table[] = {6, 3, 7, 4, 2, 1, 0, 5};
-    
-    DDRC  = 0xff;
-    PORTC = 0x0;
-    
-    DDRD = 0b11110000;
-    PORTD = 0x0;
-    
-    DDRB = 0x0;
-    PORTB = 0x0;
-    
-    memset(tore, 0, sizeof(tore));
-
+    /* Init */
     uart_init(UBRR_VALUE);
-    uart_buf_puts("Hallo!\n");
-    
-    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
-    seven_seg_init(&sseg, 4, &PORTC, &reg, seg_cat, table, TRUE);
-    
-    seven_seg_set_chr(&sseg, "8888");
-    
-    seven_seg_set_dot(&sseg, 0b0000);
     
     button_init(&butt);
     
-    button_add(&butt, &PIND, PD2, tor, 0);
-    button_add(&butt, &PIND, PD3, tor, 1);
+    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
+    seven_seg_init(&sseg, NUM_GOALS * DISPLAY_ELEMENTS_PER_GOAL, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
+    
+    /* unused */
+    DDRA = 0x0;
+    PORTA = 0x0;
+    
+    /* ISP & buttons */
+    DDRB = 0x0;
+    PORTB = 0x0;
+    
+    /* err LED (PC7), shift reg, element driver */
+    DDRC  = 0xff;
+    PORTC = 0x0;
+    
+    /* beeper (PD4), unused driver pins (PD4-PD7), uart, light barriers (PD2,PD3) */
+    DDRD = 0b11110000;
+    PORTD = 0x0;
+    
+    /* self test */
+    self_test();
+    
+    /* Configure buttons */
+    button_add(&butt, &PIND, PD2, goal, 0);
+    button_add(&butt, &PIND, PD3, goal, 1);
 
-    button_add(&butt, &PINB, PB0, dector, 0);
-    button_add(&butt, &PINB, PB1, inctor, 0);
+    button_add(&butt, &PINB, PB0, decgoal, 0);
+    button_add(&butt, &PINB, PB1, incgoal, 0);
     
-    button_add(&butt, &PINB, PB3, dector, 1);
-    button_add(&butt, &PINB, PB4, inctor, 1);
-    
+    button_add(&butt, &PINB, PB3, decgoal, 1);
+    button_add(&butt, &PINB, PB4, incgoal, 1);
+
+    /* Configure timer 0 */
+    TCCR0 |= (1 << WGM01); /* CTC mode */
+    TCCR0 |= (1 << CS00) | (1 << CS01); /* Prescaler 64 */
+    OCR0 = 249; /* ((16000000/64)/1000) = 250 */
+    TIMSK |= (1<<OCIE0); /* activate timer */
+
     sei();
     
     while(1)
     {
+        for(n = 0; n < 10; ++n)
+        {
+            button_poll(&butt);
+        }
         seven_seg_loop(&sseg);
-        button_poll(&butt);
-        _delay_ms(delay);
     }
 
     /* wird nie erreicht */
