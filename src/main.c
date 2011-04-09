@@ -26,13 +26,11 @@
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
 
-#define NUMBER_OF_MENU_ENTRIES (4)
-
-const char menu_entries[NUMBER_OF_MENU_ENTRIES][4] = { "Neu ", "Tore", "LocT", "BepT" };
+const char menu_entries[][NUM_DISPLAY_ELEMENTS] = { "Go ?", "GL", "LT", "BT", "By" };
+const size_t NUMBER_OF_MENU_ENTRIES = sizeof(menu_entries) / NUM_DISPLAY_ELEMENTS;
 
 static uint8_t menu_idx;
 static button *active_buttons = NULL;
-static boolean change_value;
 
 struct settings_s
 {
@@ -68,11 +66,26 @@ void ntostr(char *result, uint8_t n)
         strncpy(result,buf,2);
 }
 
+/**
+ * Zeigt den aktuellen Wert für ms millisekunden an.
+ * Die Zeit in millisekunden muss gerade sein.
+ */
+void loop_display(uint16_t ms)
+{
+    uint16_t n = ms / 2;
+    while (ms)
+    {
+        seven_seg_loop(&sseg);
+        _delay_ms(2);
+        --ms;
+    }
+}
+
 void flash_sseg(void)
 {
     // Make atomic?
     sseg.inverted = !sseg.inverted;
-    _delay_ms(100);
+    loop_display(100);
     sseg.inverted = !sseg.inverted;
 }
 
@@ -185,12 +198,8 @@ void self_test()
     seven_seg_set_dot(&sseg, 0b1111);
     PORTC &= ~(1<<PC7); /* err LED on */
     PORTD |= (1<<PD4); /* beeper on */
-    
-    for(n = 0; n < 250; ++n)
-    {
-        seven_seg_loop(&sseg);
-        _delay_ms(2);
-    }
+
+    loop_display(500);
     
     sseg_display_goals();
     seven_seg_set_dot(&sseg, 0);
@@ -198,63 +207,56 @@ void self_test()
     PORTC |= (1<<PC7); /* err LED off */
 }
 
-void update_menu(void)
+void sseg_display_menu(void)
 {
     char text[4];
+    strncpy(text, menu_entries[menu_idx], 2);
     uint8_t dots = 0;
-    
-    if(change_value)
-    {
 
-        switch(menu_idx)
-        {
-        case 0:
-            /* Neu */
-            strncpy(text, "Go  ", 4);
-            break;
-        case 1:
-            /* Tore */
-            //TODO: Insert value
-            strncpy(text, "T 42", 4);
-            break;
-        case 2:
-            /* LocT */
-            //TODO: Insert value
-            strncpy(text, "LT42", 4);
-            dots = 0b10;
-            break;
-        case 3:
-            /* BepT */
-            //TODO: Insert value
-            strncpy(text, "BT42", 4);
-            dots = 0b10;
-            break;
-        default:
-            //???? WTF
-            break;
-        }
-    }
-    else
+    switch(menu_idx)
     {
-        strncpy(text, menu_entries[menu_idx], 4);
+    case 0:
+        /* Go */
+        strncpy(text + 2, " ?", 2);
+        dots = 0b10;
+        break;
+    case 1:
+        /* GL */
+        ntostr(text + 2, settings.goals_per_round);
+        break;
+    case 2:
+        /* LT */
+        ntostr(text + 2, settings.lock_time);
+        dots = 0b10;
+        break;
+    case 3:
+        /* BT */
+        ntostr(text + 2, settings.beep_time);
+        dots = 0b10;
+        break;
+    case 4:
+        /* By */
+        strncpy(text + 2, "NF", 2);
+        break;
+    default:
+        break;
     }
+
     seven_seg_set_chr(&sseg, text);
     seven_seg_set_dot(&sseg, dots);
 }
 
 void chg_menu_idx(void *p)
 {
-    change_value = FALSE;
     menu_idx = (menu_idx + ((int16_t) p)) % NUMBER_OF_MENU_ENTRIES;
-    update_menu();
+    sseg_display_menu();
 }
 
 void switch_to_menu(void *p)
 {
     active_buttons = (button*) p;
     menu_idx = 0;
-    change_value = FALSE;
-    update_menu();
+    sseg_display_menu();
 }
 
 void switch_to_game(void *p)
@@ -265,7 +267,7 @@ void switch_to_game(void *p)
 
 void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
 {
-    int16_t new = *value + change;
+    int16_t new = ((int16_t) *value) + change;
     if (new >= lower && new <= upper)
     {
         *value = new;
@@ -283,35 +285,35 @@ void chg_time(uint8_t *time, int8_t change)
 
 void chg_menu_value(void *p)
 {
+    boolean update = FALSE;
     int16_t chg = (int16_t) p;
-    if(change_value)
+    switch(menu_idx)
     {
-        switch(menu_idx)
-        {
-        case 0:
-            /* Neu */
-            break;
-        case 1:
-            /* Tore */
-            chg_value(&settings.goals_per_round, chg, 1, 99);
-            break;
-        case 2:
-            /* LocT */
-            chg_time(settings.lock_time, chg);
-            break;
-        case 3:
-            /* BepT */
-            chg_time(settings.beep_time, chg);
-            break;
-        default:
-            // WHAT TO FO HERE?
-            break;
-        }
-        // change value here
+    case 0:
+        /* Go */
+        break;
+    case 1:
+        /* GL */
+        chg_value(&settings.goals_per_round, chg, 1, 99);
+        update = TRUE;
+        break;
+    case 2:
+        /* LT */
+        update = TRUE;
+        chg_time(settings.lock_time, chg);
+        break;
+    case 3:
+        /* BT */
+        update = TRUE;
+        chg_time(settings.beep_time, chg);
+        break;
+    default:
+        break;
     }
-    else
+
+    if (update)
     {
-        change_value = TRUE;
+        sseg_display_menu();
     }
 }
 
@@ -378,7 +380,8 @@ int main(void)
     button_add(&menu, &PINB, PB3, chg_menu_value, -1);
     button_add(&menu, &PINB, PB4, chg_menu_value, +1);
     
-    active_buttons = &butt;
+    /* Set by default the menu to active. */
+    active_buttons = &menu;
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */

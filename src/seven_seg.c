@@ -105,62 +105,63 @@ static uint8_t char_to_generic(char c)
 {
     switch (c)
     {
-      case 'a' :
-      case 'A' : return 0b00111111;
-      case 'b' :
-      case 'B' : return 0b01111001;
-      case 'c' :
-      case 'C' : return 0b01101000;
-      case 'd' :
-      case 'D' : return 0b01101011;
-      case 'e' :
-      case 'E' : return 0b01111100;
-      case 'f' :
-      case 'F' : return 0b00111100;
-      case 'g' :
-      case 'G' : return 0b01110101;
-      case 'h' : return 0b00111001;
-      case 'H' : return 0b00111011;
-      case 'i' : return 0b00000001;
-      case 'I' : return 0b01100000;
-      case 'j' : return 0b01000011;
-      case 'J' : return 0b01100011;
-      // k / K
-      case 'l' :
-      case 'L' : return 0b01110000;
-      // m / M
-      case 'n' :
-      case 'N' : return 0b00101001;
-      case 'o' :
-      case 'O' : return 0b01101001;
-      case 'p' :
-      case 'P' : return 0b00111110;
-      // q / Q
-      case 'r' :
-      case 'R' : return 0b00101000;
-      // s / S
-      case 't' :
-      case 'T' : return 0b01111000;
-      case 'u' : return 0b01100001;
-      case 'U' : return 0b01110011;
-      // v / V
-      // w / W
-      // x / X
-      case 'y' :
-      case 'Y' : return 0b00011011;
-      // z / Z
-      case '0' : return 0b01110111;
-      case '1' : return 0b00000011;
-      case '2' : return 0b01101110;
-      case '3' : return 0b01001111;
-      case '4' : return 0b00011011;
-      case '5' : return 0b01011101;
-      case '6' : return 0b01111101;
-      case '7' : return 0b00000111;
-      case '8' : return 0b01111111;
-      case '9' : return 0b01011111;
-      // Not supported char
-      default : return 0;
+        case 'a' :
+        case 'A' : return 0b00111111;
+        case 'b' :
+        case 'B' : return 0b01111001;
+        case 'c' :
+        case 'C' : return 0b01101000;
+        case 'd' :
+        case 'D' : return 0b01101011;
+        case 'e' :
+        case 'E' : return 0b01111100;
+        case 'f' :
+        case 'F' : return 0b00111100;
+        case 'g' :
+        case 'G' : return 0b01110101;
+        case 'h' : return 0b00111001;
+        case 'H' : return 0b00111011;
+        case 'i' : return 0b00000001;
+        case 'I' : return 0b01100000;
+        case 'j' : return 0b01000011;
+        case 'J' : return 0b01100011;
+        // k / K
+        case 'l' :
+        case 'L' : return 0b01110000;
+        // m / M
+        case 'n' :
+        case 'N' : return 0b00101001;
+        case 'o' :
+        case 'O' : return 0b01101001;
+        case 'p' :
+        case 'P' : return 0b00111110;
+        // q / Q
+        case 'r' :
+        case 'R' : return 0b00101000;
+        // s / S
+        case 't' :
+        case 'T' : return 0b01111000;
+        case 'u' : return 0b01100001;
+        case 'U' : return 0b01110011;
+        // v / V
+        // w / W
+        // x / X
+        case 'y' :
+        case 'Y' : return 0b00011011;
+        // z / Z
+        case '0' : return 0b01110111;
+        case '1' : return 0b00000011;
+        case '2' : return 0b01101110;
+        case '3' : return 0b01001111;
+        case '4' : return 0b00011011;
+        case '5' : return 0b01011101;
+        case '6' : return 0b01111101;
+        case '7' : return 0b00000111;
+        case '8' : return 0b01111111;
+        case '9' : return 0b01011111;
+        case '?' : return 0b00101110;
+        // Not supported char
+        default : return 0;
     }
 }
 
