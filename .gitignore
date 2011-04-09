@@ -6,6 +6,7 @@ src/.dep/
 *.lss
 obj/
 *.map
+*.sym
 
 # Kate temp files
 *~
