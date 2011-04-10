@@ -57,14 +57,10 @@ void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
     {
         if(dots & 1)
         {
-            //if(sseg->inverted) sseg->val[n] &= dot; 
-            //else sseg->val[n] |= dot;
             sseg->val[n] |= dot;
         }
         else
         {
-            //if(sseg->inverted) sseg->val[n] |= ~dot;
-            //else sseg->val[n] &= ~dot;
             sseg->val[n] &= ~dot;  
         }
         
