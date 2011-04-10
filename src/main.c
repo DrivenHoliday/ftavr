@@ -27,7 +27,6 @@
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
 
-static uint8_t menu_idx;
 static button *active_buttons = NULL;
 static menu_entries entries;
 
@@ -82,9 +81,9 @@ void loop_display(uint16_t ms)
 void flash_sseg(void)
 {
     // Make atomic?
-    sseg.inverted = !sseg.inverted;
+    sseg.inverted = ~sseg.inverted;
     loop_display(100);
-    sseg.inverted = !sseg.inverted;
+    sseg.inverted = ~sseg.inverted;
 }
 
 void sseg_set_last_goal_dots(void)
@@ -175,12 +174,12 @@ void goal(void *p)
             
             seven_seg_set_dot(&sseg, 0b1111);
         
-            if(settings.beeper)
+            if(settings.beeper && (settings.beep_time > 0))
             {
-                beeper = 500;
+                beeper = ((uint64_t) settings.beep_time) * 100;
                 PORTD |= (1<<PD4); /* beeper on */   
             }
-            locked = 2000;
+            locked = ((uint64_t) settings.lock_time) * 100;
             
         }
     }
@@ -217,7 +216,6 @@ void chg_menu_idx(void *p)
 void switch_to_menu(void *p)
 {
     active_buttons = (button*) p;
-    menu_idx = 0;
     sseg_display_menu();
 }
 
@@ -270,9 +268,14 @@ void menu_entry_value_inc(void *p)
     chg_value((uint8_t*) p, +1, 0, 99);
 }
 
+void menu_entry_value_bool_toogle(void *p)
+{
+    *((boolean*) p) = !(*((boolean*) p));
+}
+
 void menu_entry_get_value(void *p, char *ch, uint8_t *dots)
 {
-    ntostr(ch, (uint8_t) p);
+    ntostr(ch, *((uint8_t*) p));
     (*dots) = 0;
 }
 
@@ -286,6 +289,18 @@ void menu_entry_get_go(void *p, char *ch, uint8_t *dots)
 {
     strncpy(ch, " ?", 2);
     (*dots) = 0b0010;
+}
+
+void menu_entry_get_active(void *p, char *ch, uint8_t *dots)
+{
+    if(*((boolean*) p))
+    {
+        strncpy(ch, "on", 2);
+    }
+    else
+    {
+        strncpy(ch, "of", 2);
+    }
 }
 
 void menu_entry_start(void *p)
@@ -362,13 +377,19 @@ int main(void)
 
     /* Add menu entries */
     menu_entry_init(&entries);
+    // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
+    // Goals limit
     menu_entry_add(&entries, "GL", menu_entry_get_value, menu_entry_value_gl_dec, menu_entry_value_gl_inc, &(settings.goals_per_round));
+    // Lock time
     menu_entry_add(&entries, "Lt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.lock_time));
+    // Beeper activated (quick on/off)
+    menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
+    // Beeper time
     menu_entry_add(&entries, "Bt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.beep_time));
     
     /* Set by default the menu to active. */
-    active_buttons = &menu;
+    switch_to_menu(&menu);
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */

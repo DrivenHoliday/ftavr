@@ -7,7 +7,6 @@
 #define ENTRY_NAME_LEN (2)
 #define MENU_ENTRY_MAX_ENTRIES_NUM (10)
 
-//typedef void(*button_func)(void*);
 typedef void(*menu_entry_value_func)(void*, char*, uint8_t*);
 
 struct menu_entry_s
