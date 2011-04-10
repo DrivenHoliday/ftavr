@@ -202,21 +202,16 @@ void self_test()
     PORTC |= (1<<PC7); /* err LED off */
 }
 
-void sseg_display_menu(void)
-{
-    menu_entry_display(&entries, &sseg);
-}
-
 void chg_menu_idx(void *p)
 {
     menu_entry_chg_select(&entries, (int8_t) p);
-    sseg_display_menu();
+    menu_entry_display(&entries, &sseg);
 }
 
 void switch_to_menu(void *p)
 {
     active_buttons = (button*) p;
-    sseg_display_menu();
+    menu_entry_display(&entries, &sseg);
 }
 
 void switch_to_game(void *p)
@@ -236,16 +231,6 @@ void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
     {
         flash_sseg();
     }
-}
-
-void menu_value_left(void *p)
-{
-    menu_entry_left_click(&entries);
-}
-
-void menu_value_right(void *p)
-{
-    menu_entry_right_click(&entries);
 }
 
 void menu_entry_value_gl_dec(void *p)
@@ -372,11 +357,12 @@ int main(void)
     
     button_add(&menu, &PINB, PB2, switch_to_game, &butt);
 
-    button_add(&menu, &PINB, PB3, menu_value_left, -1);
-    button_add(&menu, &PINB, PB4, menu_value_right, +1);
-
     /* Add menu entries */
-    menu_entry_init(&entries);
+    menu_entry_init(&entries, &sseg);
+
+    menu_entry_button_left(&entries, &menu, &PINB, PB3);
+    menu_entry_button_right(&entries, &menu, &PINB, PB4);
+
     // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
     // Goals limit

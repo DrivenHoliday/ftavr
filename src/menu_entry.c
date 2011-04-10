@@ -3,9 +3,10 @@
 #include <assert.h>
 #include <string.h>
 
-void menu_entry_init(menu_entries *entries)
+void menu_entry_init(menu_entries *entries, seven_seg *sseg)
 {
     memset(entries, 0, sizeof(entries));
+    entries->sseg = sseg;
 }
 
 void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry_value_func value, button_func left, button_func right, void *payload)
@@ -44,12 +45,32 @@ void menu_entry_left_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.left)(entry.payload);
-    sseg_display_menu();
+    menu_entry_display(&entries, entries->sseg);
 }
 
 void menu_entry_right_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.right)(entry.payload);
-    sseg_display_menu();
+    menu_entry_display(&entries, entries->sseg);
+}
+
+void menu_entry_button_left_click(void *p)
+{
+    menu_entry_left_click((menu_entries*) p);
+}
+
+void menu_entry_button_right_click(void *p)
+{
+    menu_entry_right_click((menu_entries*) p);
+}
+
+void menu_entry_button_left(menu_entries *entries, button *butt, mc_port port, mc_pin pin)
+{
+    button_add(butt, port, pin, menu_entry_button_left_click, entries);
+}
+
+void menu_entry_button_right(menu_entries *entries, button *butt, mc_port port, mc_pin pin)
+{
+    button_add(butt, port, pin, menu_entry_button_right_click, entries);
 }
