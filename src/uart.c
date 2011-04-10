@@ -6,6 +6,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include <util/atomic.h>
+
 #include "ringbuf.h"
 
 #define UART_RINGBUF_SIZE 128
@@ -37,16 +39,19 @@ ISR(USART_RXC_vect)
 
 boolean uart_getc(char *c)
 {
-    RINGBUF_READ(in_buf, *c);
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        RINGBUF_READ(in_buf, *c);
     
-    if(*c)
-    {
-        RINGBUF_MARK(in_buf, '\0');
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;       
+        if(*c)
+        {
+            RINGBUF_MARK(in_buf, '\0');
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;       
+        }
     }
 }
 

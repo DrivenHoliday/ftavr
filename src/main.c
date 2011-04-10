@@ -16,6 +16,7 @@
 #include "seven_seg.h"
 #include "types.h"
 #include "uart.h"
+#include "uart_cli.h"
 
 #define NUM_GOALS (2)
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
@@ -188,6 +189,8 @@ int main(void)
     /* Init */
     uart_init(UBRR_VALUE);
     
+    uart_cli_init();
+    
     button_init(&butt);
     
     shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
@@ -234,15 +237,11 @@ int main(void)
     {
         for(n = 0; n < 10; ++n)
         {
-            button_poll(&butt);
-            
-            char c;
-            if(uart_getc(&c))
-            {
-                uart_buf_putc(c);
-            }
+            //button_poll(&butt);
+            uart_cli_proc();
+            _delay_ms(500);
         }
-        seven_seg_loop(&sseg);
+        //seven_seg_loop(&sseg);
     }
 
     /* wird nie erreicht */
