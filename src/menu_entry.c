@@ -37,22 +37,26 @@ void menu_entry_display(menu_entries *entries, seven_seg *sseg)
 
 void menu_entry_chg_select(menu_entries *entries, int8_t change)
 {
-    //TODO: Maybe problems with negative values?
-    entries->sel = (entries->sel + change) % entries->num;
+    int8_t selection = ((int8_t) entries->sel) + change;
+    while(selection < 0)
+    {
+        selection += entries->num;
+    }
+    entries->sel = selection % entries->num;
 }
 
 void menu_entry_left_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.left)(entry.payload);
-    menu_entry_display(&entries, entries->sseg);
+    menu_entry_display(entries, entries->sseg);
 }
 
 void menu_entry_right_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.right)(entry.payload);
-    menu_entry_display(&entries, entries->sseg);
+    menu_entry_display(entries, entries->sseg);
 }
 
 void menu_entry_button_left_click(void *p)

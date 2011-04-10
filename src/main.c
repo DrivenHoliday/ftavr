@@ -26,6 +26,7 @@
 #define DEFAULT_BEEPER (TRUE)
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
+#define DEFAULT_ERROR_TIME (03)
 
 static button *active_buttons = NULL;
 static menu_entries entries;
@@ -36,9 +37,10 @@ struct settings_s
     boolean beeper;
     uint8_t beep_time;
     uint8_t lock_time;
+    uint8_t error_time;
 };
 
-static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME};
+static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME, DEFAULT_ERROR_TIME};
 
 static seven_seg sseg;
 
@@ -47,6 +49,7 @@ static volatile uint8_t last_goal = 255;
 
 static volatile uint16_t beeper = 0;
 static volatile uint16_t locked = 0;
+static volatile uint16_t error = 0;
 
 void ntostr(char *result, uint8_t n)
 {
@@ -84,6 +87,23 @@ void flash_sseg(void)
     sseg.inverted = ~sseg.inverted;
     loop_display(100);
     sseg.inverted = ~sseg.inverted;
+}
+
+void menu_error(void)
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        if(error > 0)
+        {
+            sseg.inverted = !sseg.inverted;
+        }
+        error = settings.error_time * 100;
+        if(error > 0)
+        { 
+            sseg.inverted = !sseg.inverted;
+            PORTD |= (1<<PD4); /* beeper on */
+        }       
+    }
 }
 
 void sseg_set_last_goal_dots(void)
@@ -141,15 +161,29 @@ void decgoal(void *p)
     sseg_display_goals();
 }
 
+static volatile uint8_t ud = 0;
+
 /* Timer 0 interrupt vector, called every 1 ms */
 ISR (TIMER0_COMP_vect)
 {    
     if(beeper)
     {
         --beeper;
-        if(!beeper)
+        if(!beeper && !error)
         {
             PORTD &= ~(1 << PD4);
+        }
+    }
+    if(error)
+    {
+        --error;
+        if(!error)
+        {
+            sseg.inverted = !sseg.inverted;
+            if (!beeper)
+            {
+                PORTD &= ~(1 << PD4);
+            }
         }
     }
     if(locked)
@@ -160,6 +194,7 @@ ISR (TIMER0_COMP_vect)
             sseg_set_last_goal_dots();
         }
     }
+    ++ud;
 }
 
 void goal(void *p)
@@ -177,7 +212,7 @@ void goal(void *p)
             if(settings.beeper && (settings.beep_time > 0))
             {
                 beeper = ((uint64_t) settings.beep_time) * 100;
-                PORTD |= (1<<PD4); /* beeper on */   
+                PORTD |= (1<<PD4); /* beeper on */
             }
             locked = ((uint64_t) settings.lock_time) * 100;
             
@@ -229,7 +264,7 @@ void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
     }
     else
     {
-        flash_sseg();
+        menu_error();
     }
 }
 
@@ -373,6 +408,8 @@ int main(void)
     menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
     // Beeper time
     menu_entry_add(&entries, "Bt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.beep_time));
+    // Error time
+    menu_entry_add(&entries, "Et", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.error_time));
     
     /* Set by default the menu to active. */
     switch_to_menu(&menu);
@@ -387,11 +424,15 @@ int main(void)
     
     while(1)
     {
-        for(n = 0; n < 10; ++n)
+        //for(n = 0; n < 300; ++n)
         {
             button_poll(active_buttons);
         }
-        seven_seg_loop(&sseg);
+        if(ud > 3)
+        {
+            seven_seg_loop(&sseg);
+            ud = 0;
+        }
     }
 
     /* wird nie erreicht */

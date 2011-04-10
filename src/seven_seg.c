@@ -57,13 +57,15 @@ void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
     {
         if(dots & 1)
         {
-            if(sseg->inverted) sseg->val[n] &= dot; 
-            else sseg->val[n] |= dot;
+            //if(sseg->inverted) sseg->val[n] &= dot; 
+            //else sseg->val[n] |= dot;
+            sseg->val[n] |= dot;
         }
         else
         {
-            if(sseg->inverted) sseg->val[n] |= ~dot;
-            else sseg->val[n] &= ~dot; 
+            //if(sseg->inverted) sseg->val[n] |= ~dot;
+            //else sseg->val[n] &= ~dot;
+            sseg->val[n] &= ~dot;  
         }
         
         dots >>= 1;
@@ -79,7 +81,10 @@ void seven_seg_loop(seven_seg *sseg)
     sseg->curr = (sseg->curr + 1) % sseg->num_seg;
 
     /* write configuration to shift reg */
-    shift_reg_write(sseg->seg_ano,sseg->val[sseg->curr]);
+    uint8_t val = sseg->val[sseg->curr];
+    if(sseg->inverted)
+        val = ~val;
+    shift_reg_write(sseg->seg_ano,val);
 
     /* next element on */
     *sseg->port |= (1<<sseg->seg_cat[sseg->curr]);
@@ -181,11 +186,6 @@ static uint8_t convert(uint8_t v, seven_seg *sseg)
             }
             mask >>= 1;
         }
-    }
-    
-    if(sseg->inverted)
-    {
-        result = ~result;
     }
     
     return result;
