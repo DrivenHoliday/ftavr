@@ -3,10 +3,9 @@
 #include <assert.h>
 #include <string.h>
 
-void menu_entry_init(menu_entries *entries, seven_seg *sseg)
+void menu_entry_init(menu_entries *entries)
 {
     memset(entries, 0, sizeof(entries));
-    entries->sseg = sseg;
 }
 
 void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry_value_func value, button_func left, button_func right, void *payload)
@@ -19,6 +18,12 @@ void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry
 
     ++entries->num;
     assert(entries->num <= MENU_ENTRY_MAX_ENTRIES_NUM);
+}
+
+void menu_entry_display_entry(menu_entries *entries, seven_seg *sseg, size_t sel)
+{
+    entries->sel = sel;
+    menu_entry_display(entries, sseg);
 }
 
 void menu_entry_display(menu_entries *entries, seven_seg *sseg)
@@ -49,14 +54,12 @@ void menu_entry_left_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.left)(entry.payload);
-    menu_entry_display(entries, entries->sseg);
 }
 
 void menu_entry_right_click(menu_entries *entries)
 {
     menu_entry entry = entries->menu_entries[entries->sel];
     (*entry.right)(entry.payload);
-    menu_entry_display(entries, entries->sseg);
 }
 
 void menu_entry_button_left_click(void *p)

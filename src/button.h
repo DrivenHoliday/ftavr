@@ -31,5 +31,6 @@ typedef struct button_s button;
 void button_init(button *butt);
 void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *payload);
 void button_poll(button *butt);
+void button_poll_action(button *butt, boolean action);
 
 #endif

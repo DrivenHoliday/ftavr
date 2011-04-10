@@ -4,6 +4,7 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/eeprom.h>
 #include <avr/wdt.h>
 
 #include <util/delay.h>
@@ -29,8 +30,17 @@
 #define DEFAULT_LOCK_TIME (20)
 #define DEFAULT_ERROR_TIME (03)
 
+static button game_buttons;
+static button menu_buttons;
 static button *active_buttons = NULL;
 static menu_entries entries;
+
+/* Settings eeprom pointer */
+uint8_t ee_goals_per_round EEMEM = DEFAULT_GOALS_PER_ROUND;
+boolean ee_beeper EEMEM = DEFAULT_BEEPER;
+uint8_t ee_beep_time EEMEM = DEFAULT_BEEP_TIME;
+uint8_t ee_lock_time EEMEM = DEFAULT_LOCK_TIME;
+uint8_t ee_error_time EEMEM = DEFAULT_ERROR_TIME;
 
 struct settings_s
 {
@@ -82,14 +92,6 @@ void loop_display(uint16_t ms)
     }
 }
 
-void flash_sseg(void)
-{
-    // Make atomic?
-    sseg.inverted = ~sseg.inverted;
-    loop_display(100);
-    sseg.inverted = ~sseg.inverted;
-}
-
 void menu_error(void)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -109,21 +111,24 @@ void menu_error(void)
 
 void sseg_set_last_goal_dots(void)
 {
-    uint8_t dots = 0;
-    size_t n = 0;
-    
-    for(n = 0; n < NUM_GOALS; ++n)
+    if(active_buttons == &game_buttons)
     {
-        dots <<= 2;
-        if(last_goal == n)
-        {    
-            dots |= 0b00000010;
+        uint8_t dots = 0;
+        size_t n = 0;
+        
+        for(n = 0; n < NUM_GOALS; ++n)
+        {
+            dots <<= 2;
+            if(last_goal == n)
+            {    
+                dots |= 0b00000010;
+            }
         }
+        
+        uart_buf_puti8(dots);
+        
+        seven_seg_set_dot(&sseg, dots);
     }
-    
-    uart_buf_puti8(dots);
-    
-    seven_seg_set_dot(&sseg, dots);
 }
 
 void sseg_display_goals(void)
@@ -244,15 +249,26 @@ void chg_menu_idx(void *p)
     menu_entry_display(&entries, &sseg);
 }
 
+void switch_buttons(button *succ)
+{
+    button_poll_action(succ, FALSE);
+    active_buttons = succ;
+}
+
 void switch_to_menu(void *p)
 {
-    active_buttons = (button*) p;
-    menu_entry_display(&entries, &sseg);
+    switch_buttons(&menu_buttons);
+    menu_entry_display_entry(&entries, &sseg, 0);
 }
 
 void switch_to_game(void *p)
 {
-    active_buttons = (button*) p;
+    switch_buttons(&game_buttons);
+    eeprom_write_byte(&ee_goals_per_round, settings.goals_per_round);
+    eeprom_write_byte(&ee_beep_time, settings.beep_time);
+    eeprom_write_byte(&ee_beeper, settings.beeper);
+    eeprom_write_byte(&ee_lock_time, settings.lock_time);
+    eeprom_write_byte(&ee_error_time, settings.error_time);
     sseg_display_goals();
 }
 
@@ -267,6 +283,7 @@ void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
     {
         menu_error();
     }
+    menu_entry_display(&entries, &sseg);
 }
 
 void menu_entry_value_gl_dec(void *p)
@@ -292,6 +309,7 @@ void menu_entry_value_inc(void *p)
 void menu_entry_value_bool_toogle(void *p)
 {
     *((boolean*) p) = !(*((boolean*) p));
+    menu_entry_display(&entries, &sseg);
 }
 
 void menu_entry_get_value(void *p, char *ch, uint8_t *dots)
@@ -393,6 +411,12 @@ void menu_entry_start(void *p)
     /*******************/
     //TODO: START GAME //
     /*******************/
+
+    last_goal = 255;
+    goals[0] = 0;
+    goals[1] = 0;
+
+    switch_to_game(NULL);
 }
 
 int main(void)
@@ -401,13 +425,13 @@ int main(void)
     const uint8_t display_convert_table[] = {6, 3, 7, 4, 2, 1, 0, 5};
 
     shift_reg reg;
-    size_t n = 0;
 
-    /* game "buttons" */
-    button butt;
-
-    /* menu buttons */
-    button menu;
+    /* load settings */
+    settings.goals_per_round = eeprom_read_byte(&ee_goals_per_round);
+    settings.beeper = eeprom_read_byte(&ee_beeper);
+    settings.lock_time = eeprom_read_byte(&ee_lock_time);
+    settings.beep_time = eeprom_read_byte(&ee_beep_time);
+    settings.error_time = eeprom_read_byte(&ee_error_time);
     
      /* unused */
     DDRA = 0x0;
@@ -431,8 +455,8 @@ int main(void)
     /* Init */
     uart_init(UBRR_VALUE);
     
-    button_init(&butt);
-    button_init(&menu);
+    button_init(&game_buttons);
+    button_init(&menu_buttons);
     
     shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
     seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
@@ -441,28 +465,28 @@ int main(void)
     self_test();
 
     /* Configure game buttons */
-    button_add(&butt, &PIND, PD2, goal, 0);
-    button_add(&butt, &PIND, PD3, goal, 1);
+    button_add(&game_buttons, &PIND, PD2, goal, 0);
+    button_add(&game_buttons, &PIND, PD3, goal, 1);
 
-    button_add(&butt, &PINB, PB0, decgoal, 0);
-    button_add(&butt, &PINB, PB1, incgoal, 0);
+    button_add(&game_buttons, &PINB, PB0, decgoal, 0);
+    button_add(&game_buttons, &PINB, PB1, incgoal, 0);
     
-    button_add(&butt, &PINB, PB2, switch_to_menu, &menu);
+    button_add(&game_buttons, &PINB, PB2, switch_to_menu, NULL);
     
-    button_add(&butt, &PINB, PB3, decgoal, 1);
-    button_add(&butt, &PINB, PB4, incgoal, 1);
+    button_add(&game_buttons, &PINB, PB3, decgoal, 1);
+    button_add(&game_buttons, &PINB, PB4, incgoal, 1);
 
     /* Configure menu buttons */
-    button_add(&menu, &PINB, PB0, chg_menu_idx, -1);
-    button_add(&menu, &PINB, PB1, chg_menu_idx, +1);
+    button_add(&menu_buttons, &PINB, PB0, chg_menu_idx, -1);
+    button_add(&menu_buttons, &PINB, PB1, chg_menu_idx, +1);
     
-    button_add(&menu, &PINB, PB2, switch_to_game, &butt);
+    button_add(&menu_buttons, &PINB, PB2, switch_to_game, NULL);
 
     /* Add menu entries */
-    menu_entry_init(&entries, &sseg);
+    menu_entry_init(&entries);
 
-    menu_entry_button_left(&entries, &menu, &PINB, PB3);
-    menu_entry_button_right(&entries, &menu, &PINB, PB4);
+    menu_entry_button_left(&entries, &menu_buttons, &PINB, PB3);
+    menu_entry_button_right(&entries, &menu_buttons, &PINB, PB4);
 
     // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
@@ -478,7 +502,7 @@ int main(void)
     menu_entry_add(&entries, "Et", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.error_time));
     
     /* Set by default the menu to active. */
-    switch_to_menu(&menu);
+    switch_to_menu(NULL);
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */
