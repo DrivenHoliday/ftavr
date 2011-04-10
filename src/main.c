@@ -4,6 +4,7 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
 
 #include <util/delay.h>
 #include <util/atomic.h>
@@ -323,13 +324,75 @@ void menu_entry_get_active(void *p, char *ch, uint8_t *dots)
     }
 }
 
+void sos(void)
+{
+    const uint16_t short_s = 120;
+    const uint16_t long_s = short_s * 3;
+    
+    const uint16_t pause_s = short_s;     /* symbole */
+    const uint16_t pause_c = long_s - pause_s;      /* character */
+    const uint16_t pause_w = (short_s * 7) - pause_s; /* word */
+    
+    size_t n = 0;
+    
+    for(n = 0; n < 3; ++n)
+    {
+        PORTD |= (1<<PD4); /* beeper on */
+        _delay_ms(short_s);
+        PORTD &= ~(1<<PD4); /* beeper off */
+        _delay_ms(pause_s);
+    }
+    
+    _delay_ms(pause_c);
+    
+    
+    for(n = 0; n < 3; ++n)
+    {
+        PORTD |= (1<<PD4); /* beeper on */
+        _delay_ms(long_s);
+        PORTD &= ~(1<<PD4); /* beeper off */
+        _delay_ms(pause_s);
+    }
+     
+    _delay_ms(pause_c);
+    
+    for(n = 0; n < 3; ++n)
+    {
+        PORTD |= (1<<PD4); /* beeper on */
+        _delay_ms(short_s);
+        PORTD &= ~(1<<PD4); /* beeper off */
+        _delay_ms(pause_s);
+    }
+    
+    _delay_ms(pause_w);
+}
+
+void watch_dog(void)
+{
+    /* if watch dog reset */
+    if(MCUCSR & (1<<WDRF))
+    {
+        /* delete watch dog reset flag */
+        MCUCSR &= ~(1<<WDRF);
+        
+        /* communicate error state */
+        PORTC &= ~(1<<PC7); /* err LED on */
+       
+        while(1)
+        {
+            sos();
+        }
+    }
+    
+    wdt_enable(WDTO_1S);
+}
+
 void menu_entry_start(void *p)
 {
 
     /*******************/
     //TODO: START GAME //
     /*******************/
-
 }
 
 int main(void)
@@ -346,16 +409,7 @@ int main(void)
     /* menu buttons */
     button menu;
     
-    /* Init */
-    uart_init(UBRR_VALUE);
-    
-    button_init(&butt);
-    button_init(&menu);
-    
-    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
-    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
-    
-    /* unused */
+     /* unused */
     DDRA = 0x0;
     PORTA = 0x0;
     
@@ -370,6 +424,18 @@ int main(void)
     /* beeper (PD4), unused driver pins (PD4-PD7), uart, light barriers (PD2,PD3) */
     DDRD = 0b11110000;
     PORTD = 0x0;
+   
+    /* Watch Dog */
+    watch_dog();
+       
+    /* Init */
+    uart_init(UBRR_VALUE);
+    
+    button_init(&butt);
+    button_init(&menu);
+    
+    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
+    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
     
     /* self test */
     self_test();
@@ -424,10 +490,10 @@ int main(void)
     
     while(1)
     {
-        //for(n = 0; n < 300; ++n)
-        {
-            button_poll(active_buttons);
-        }
+        wdt_reset();
+        
+        button_poll(active_buttons);
+
         if(ud > 3)
         {
             seven_seg_loop(&sseg);
