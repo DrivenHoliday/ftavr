@@ -6,8 +6,10 @@
 
 #define ENTRY_NAME_LEN (2)
 #define MENU_ENTRY_MAX_ENTRIES_NUM (10)
-
+typedef void(*void_func)(void);
 typedef void(*menu_entry_value_func)(void*, char*, uint8_t*);
+
+typedef struct menu_entries_s menu_entries;
 
 struct menu_entry_s
 {
@@ -18,19 +20,33 @@ struct menu_entry_s
     void *payload;
 };
 
-struct menu_entries_s {
-
-    // private!
-    struct menu_entry_s menu_entries[MENU_ENTRY_MAX_ENTRIES_NUM];
-    size_t num;
-    size_t sel;
+struct int_payload_s {
+    uint8_t lower;
+    uint8_t upper;
+    uint8_t dots;
+    uint8_t *value;
+    menu_entries *entries;
 };
 
 typedef struct menu_entry_s menu_entry;
-typedef struct menu_entries_s menu_entries;
+typedef struct int_payload_s int_payload;
 
-void menu_entry_init(menu_entries *entries);
+struct menu_entries_s {
+    void_func error_func;
+    seven_seg *sseg;
+
+    // private!
+    menu_entry menu_entries[MENU_ENTRY_MAX_ENTRIES_NUM];
+    size_t num;
+    size_t sel;
+
+    int_payload int_payloads[MENU_ENTRY_MAX_ENTRIES_NUM];
+    size_t int_payload_num;
+};
+
+void menu_entry_init(menu_entries *entries, void_func error_func, seven_seg *sseg);
 void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry_value_func value, button_func left, button_func right, void *payload);
+void menu_entry_add_int(menu_entries *entries, char name[ENTRY_NAME_LEN], uint8_t lower, uint8_t upper, uint8_t dots, uint8_t *value);
 void menu_entry_chg_select(menu_entries *entries, int8_t change);
 void menu_entry_left_click(menu_entries *entries);
 void menu_entry_right_click(menu_entries *entries);

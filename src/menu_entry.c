@@ -3,9 +3,30 @@
 #include <assert.h>
 #include <string.h>
 
-void menu_entry_init(menu_entries *entries)
+static void chg_value(menu_entries *entries, uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
+{
+    int16_t new = ((int16_t) *value) + change;
+    if (new >= lower && new <= upper)
+    {
+        *value = new;
+    }
+    else
+    {
+        (*entries->error_func)();
+    }
+    menu_entry_display(entries, entries->sseg);
+}
+
+static void chg_value_pl(int_payload *payload, int8_t change)
+{
+    chg_value(payload->entries, payload->value, change, payload->lower, payload->upper);
+}
+
+void menu_entry_init(menu_entries *entries, void_func error_func, seven_seg *sseg)
 {
     memset(entries, 0, sizeof(entries));
+    entries->error_func = error_func;
+    entries->sseg = sseg;
 }
 
 void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry_value_func value, button_func left, button_func right, void *payload)
@@ -18,6 +39,36 @@ void menu_entry_add(menu_entries *entries, char name[ENTRY_NAME_LEN], menu_entry
 
     ++entries->num;
     assert(entries->num <= MENU_ENTRY_MAX_ENTRIES_NUM);
+}
+
+void menu_entry_int_value_dec(void *p)
+{
+    chg_value_pl((int_payload*) p, -1);
+}
+
+void menu_entry_int_value_inc(void *p)
+{
+    chg_value_pl((int_payload*) p, +1);
+}
+
+void menu_entry_int_value(void *p, char *ch, uint8_t *dots)
+{
+    ntostr(ch, *((int_payload*) p)->value);
+    (*dots) = ((int_payload*) p)->dots;
+}
+
+void menu_entry_add_int(menu_entries *entries, char name[ENTRY_NAME_LEN], uint8_t lower, uint8_t upper, uint8_t dots, uint8_t *value)
+{
+    int_payload *payload = &(entries->int_payloads[entries->int_payload_num]);
+    ++entries->int_payload_num;
+    assert(entries->int_payload_num <= MENU_ENTRY_MAX_ENTRIES_NUM);
+
+    payload->lower = lower;
+    payload->upper = upper;
+    payload->value = value;
+    payload->dots = dots;
+    payload->entries = entries;
+    menu_entry_add(entries, name, menu_entry_int_value, menu_entry_int_value_dec, menu_entry_int_value_inc, payload);
 }
 
 void menu_entry_display_entry(menu_entries *entries, seven_seg *sseg, size_t sel)

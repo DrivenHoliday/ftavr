@@ -272,56 +272,10 @@ void switch_to_game(void *p)
     sseg_display_goals();
 }
 
-void chg_value(uint8_t *value, int8_t change, uint8_t lower, uint8_t upper)
-{
-    int16_t new = ((int16_t) *value) + change;
-    if (new >= lower && new <= upper)
-    {
-        *value = new;
-    }
-    else
-    {
-        menu_error();
-    }
-    menu_entry_display(&entries, &sseg);
-}
-
-void menu_entry_value_gl_dec(void *p)
-{
-    chg_value((uint8_t*) p, -1, 1, 99);
-}
-
-void menu_entry_value_gl_inc(void *p)
-{
-    chg_value((uint8_t*) p, +1, 1, 99);
-}
-
-void menu_entry_value_dec(void *p)
-{
-    chg_value((uint8_t*) p, -1, 0, 99);
-}
-
-void menu_entry_value_inc(void *p)
-{
-    chg_value((uint8_t*) p, +1, 0, 99);
-}
-
 void menu_entry_value_bool_toogle(void *p)
 {
     *((boolean*) p) = !(*((boolean*) p));
     menu_entry_display(&entries, &sseg);
-}
-
-void menu_entry_get_value(void *p, char *ch, uint8_t *dots)
-{
-    ntostr(ch, *((uint8_t*) p));
-    (*dots) = 0;
-}
-
-void menu_entry_get_value_dot(void *p, char *ch, uint8_t *dots)
-{
-    menu_entry_get_value(p, ch, dots);
-    (*dots) = 0b0010;
 }
 
 void menu_entry_get_go(void *p, char *ch, uint8_t *dots)
@@ -483,7 +437,7 @@ int main(void)
     button_add(&menu_buttons, &PINB, PB2, switch_to_game, NULL);
 
     /* Add menu entries */
-    menu_entry_init(&entries);
+    menu_entry_init(&entries, menu_error, &sseg);
 
     menu_entry_button_left(&entries, &menu_buttons, &PINB, PB3);
     menu_entry_button_right(&entries, &menu_buttons, &PINB, PB4);
@@ -491,15 +445,15 @@ int main(void)
     // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
     // Goals limit
-    menu_entry_add(&entries, "GL", menu_entry_get_value, menu_entry_value_gl_dec, menu_entry_value_gl_inc, &(settings.goals_per_round));
+    menu_entry_add_int(&entries, "GL", 1, 99, 0, &settings.goals_per_round);
     // Lock time
-    menu_entry_add(&entries, "Lt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.lock_time));
+    menu_entry_add_int(&entries, "Lt", 0, 99, 0b10, &settings.lock_time);
     // Beeper activated (quick on/off)
     menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
     // Beeper time
-    menu_entry_add(&entries, "Bt", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.beep_time));
+    menu_entry_add_int(&entries, "Bt", 0, 99, 0b10, &settings.beep_time);
     // Error time
-    menu_entry_add(&entries, "Et", menu_entry_get_value_dot, menu_entry_value_dec, menu_entry_value_inc, &(settings.error_time));
+    menu_entry_add_int(&entries, "Et", 0, 99, 0b10, &settings.error_time);
     
     /* Set by default the menu to active. */
     switch_to_menu(NULL);
