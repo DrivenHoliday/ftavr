@@ -212,16 +212,17 @@ void goal(void *p)
             incgoal(p);
             
             last_goal = p;
-            
-            seven_seg_set_dot(&sseg, 0b1111);
         
             if(settings.beeper && (settings.beep_time > 0))
             {
-                beeper = ((uint64_t) settings.beep_time) * 100;
+                beeper = ((uint16_t) settings.beep_time) * 100;
                 PORTD |= (1<<PD4); /* beeper on */
             }
-            locked = ((uint64_t) settings.lock_time) * 100;
-            
+            if (settings.lock_time > 0)
+            {
+                seven_seg_set_dot(&sseg, 0b1111);
+                locked = ((uint16_t) settings.lock_time) * 100;
+            }            
         }
     }
 }
@@ -261,14 +262,19 @@ void switch_to_menu(void *p)
     menu_entry_display_entry(&entries, &sseg, 0);
 }
 
-void switch_to_game(void *p)
+void write_settings(void)
 {
-    switch_buttons(&game_buttons);
     eeprom_write_byte(&ee_goals_per_round, settings.goals_per_round);
     eeprom_write_byte(&ee_beep_time, settings.beep_time);
     eeprom_write_byte(&ee_beeper, settings.beeper);
     eeprom_write_byte(&ee_lock_time, settings.lock_time);
     eeprom_write_byte(&ee_error_time, settings.error_time);
+}
+
+void switch_to_game(void *p)
+{
+    switch_buttons(&game_buttons);
+    write_settings();
     sseg_display_goals();
 }
 
@@ -359,6 +365,16 @@ void watch_dog(void)
     wdt_enable(WDTO_1S);
 }
 
+void menu_entry_reset(void *p)
+{
+    settings.goals_per_round = DEFAULT_GOALS_PER_ROUND;
+    settings.beeper = DEFAULT_BEEPER;
+    settings.beep_time = DEFAULT_BEEP_TIME;
+    settings.lock_time = DEFAULT_LOCK_TIME;
+    settings.error_time = DEFAULT_ERROR_TIME;
+//    write_settings();    
+}
+
 void menu_entry_start(void *p)
 {
 
@@ -399,9 +415,9 @@ int main(void)
     DDRC  = 0xff;
     PORTC = 0x0;
     
-    /* beeper (PD4), unused driver pins (PD4-PD7), uart, light barriers (PD2,PD3) */
+    /* beeper (PD4), unused driver pins (PD5-PD7), uart (PD0, PD1), light barriers (PD2, PD3) */
     DDRD = 0b11110000;
-    PORTD = 0x0;
+    PORTD = 0b00000000;
    
     /* Watch Dog */
     watch_dog();
@@ -454,6 +470,8 @@ int main(void)
     menu_entry_add_int(&entries, "Bt", 0, 99, 0b10, &settings.beep_time);
     // Error time
     menu_entry_add_int(&entries, "Et", 0, 99, 0b10, &settings.error_time);
+    // Resets to default
+    menu_entry_add(&entries, "Re", menu_entry_get_go, menu_entry_reset, menu_entry_reset, NULL);
     
     /* Set by default the menu to active. */
     switch_to_menu(NULL);
