@@ -47,10 +47,15 @@ uint8_t ee_bouncer_time EEMEM = DEFAULT_BOUNCER_TIME;
 struct settings_s
 {
     uint8_t goals_per_round;
+    // Defines if beeper is activated (overrides beep_time)
     boolean beeper;
+    // time in 100 ms steps
     uint8_t beep_time;
+    // time in 100 ms steps
     uint8_t lock_time;
+    // time in 100 ms steps
     uint8_t error_time;
+    // time in 10 ms steps
     uint8_t bouncer_time;
 };
 
@@ -64,6 +69,7 @@ static volatile uint8_t last_goal = 255;
 static volatile uint16_t beeper = 0;
 static volatile uint16_t locked = 0;
 static volatile uint16_t error = 0;
+static volatile uint16_t bouncer = 0;
 
 void ntostr(char *result, uint8_t n)
 {
@@ -156,18 +162,18 @@ void incgoal(void *p)
 {
     if(goals[(size_t)p] < settings.goals_per_round)
     {
-        goals[(size_t)p] += 1;
+        ++goals[(size_t)p];
+        sseg_display_goals();
     }
-    sseg_display_goals();
 }
 
 void decgoal(void *p)
 {
     if(goals[(size_t)p] > 0)
     {
-        goals[(size_t)p] -= 1;
+        --goals[(size_t)p];
+        sseg_display_goals();
     }
-    sseg_display_goals();
 }
 
 static volatile uint8_t ud = 0;
@@ -203,29 +209,55 @@ ISR (TIMER0_COMP_vect)
             sseg_set_last_goal_dots();
         }
     }
+
+    if(bouncer)
+    {
+        --bouncer;
+        if (!bouncer)
+        {
+            count_goal(last_goal);
+        }
+    }
     ++ud;
+}
+
+void count_goal(size_t goal)
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        incgoal(goal);
+        if(settings.beeper && (settings.beep_time > 0))
+        {
+            beeper = ((uint16_t) settings.beep_time) * 100;
+            PORTD |= (1<<PD4); /* beeper on */
+        }
+        if (settings.lock_time > 0)
+        {
+            seven_seg_set_dot(&sseg, 0b1111);
+            locked = ((uint16_t) settings.lock_time) * 100;
+        }
+    }
 }
 
 void goal(void *p)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        if(!locked)
+        //TODO: Handle bouncer on the other side
+        if(bouncer)
         {
-            incgoal(p);
-            
+            bouncer = 0;
+            // bouncer detected
+        }
+        else if(!locked)
+        {
             last_goal = p;
-        
-            if(settings.beeper && (settings.beep_time > 0))
+            bouncer = ((uint16_t) settings.bouncer_time) * 10;
+
+            if(!bouncer)
             {
-                beeper = ((uint16_t) settings.beep_time) * 100;
-                PORTD |= (1<<PD4); /* beeper on */
+                count_goal(p);
             }
-            if (settings.lock_time > 0)
-            {
-                seven_seg_set_dot(&sseg, 0b1111);
-                locked = ((uint16_t) settings.lock_time) * 100;
-            }            
         }
     }
 }
@@ -470,7 +502,7 @@ int main(void)
     // Lock time
     menu_entry_add_int(&entries, "Lt", 0, 99, 0b10, &settings.lock_time);
     // Bouncer time
-    menu_entry_add_int(&entries, "bc", 0, 99, 0b10, &settings.bouncer_time);
+    menu_entry_add_int(&entries, "bc", 0, 99, 0b00, &settings.bouncer_time);
     // Beeper activated (quick on/off)
     menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
     // Beeper time
