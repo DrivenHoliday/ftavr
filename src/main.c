@@ -29,6 +29,7 @@
 #define DEFAULT_BEEP_TIME (05)
 #define DEFAULT_LOCK_TIME (20)
 #define DEFAULT_ERROR_TIME (03)
+#define DEFAULT_BOUNCER_TIME (01)
 
 static button game_buttons;
 static button menu_buttons;
@@ -41,6 +42,7 @@ boolean ee_beeper EEMEM = DEFAULT_BEEPER;
 uint8_t ee_beep_time EEMEM = DEFAULT_BEEP_TIME;
 uint8_t ee_lock_time EEMEM = DEFAULT_LOCK_TIME;
 uint8_t ee_error_time EEMEM = DEFAULT_ERROR_TIME;
+uint8_t ee_bouncer_time EEMEM = DEFAULT_BOUNCER_TIME;
 
 struct settings_s
 {
@@ -49,9 +51,10 @@ struct settings_s
     uint8_t beep_time;
     uint8_t lock_time;
     uint8_t error_time;
+    uint8_t bouncer_time;
 };
 
-static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME, DEFAULT_ERROR_TIME};
+static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME, DEFAULT_ERROR_TIME, DEFAULT_BOUNCER_TIME};
 
 static seven_seg sseg;
 
@@ -269,6 +272,7 @@ void write_settings(void)
     eeprom_write_byte(&ee_beeper, settings.beeper);
     eeprom_write_byte(&ee_lock_time, settings.lock_time);
     eeprom_write_byte(&ee_error_time, settings.error_time);
+    eeprom_write_byte(&ee_bouncer_time, settings.bouncer_time);
 }
 
 void switch_to_game(void *p)
@@ -372,6 +376,7 @@ void menu_entry_reset(void *p)
     settings.beep_time = DEFAULT_BEEP_TIME;
     settings.lock_time = DEFAULT_LOCK_TIME;
     settings.error_time = DEFAULT_ERROR_TIME;
+    settings.bouncer_time = DEFAULT_BOUNCER_TIME;
 //    write_settings();    
 }
 
@@ -461,9 +466,11 @@ int main(void)
     // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
     // Goals limit
-    menu_entry_add_int(&entries, "GL", 1, 99, 0, &settings.goals_per_round);
+    menu_entry_add_int(&entries, "GL", 1, 99, 0b00, &settings.goals_per_round);
     // Lock time
     menu_entry_add_int(&entries, "Lt", 0, 99, 0b10, &settings.lock_time);
+    // Bouncer time
+    menu_entry_add_int(&entries, "bc", 0, 99, 0b10, &settings.bouncer_time);
     // Beeper activated (quick on/off)
     menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
     // Beeper time

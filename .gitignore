@@ -10,3 +10,6 @@ obj/
 
 # Kate temp files
 *~
+
+# vi(m) temp files
+.*.swp
