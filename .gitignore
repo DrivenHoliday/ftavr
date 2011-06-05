@@ -7,6 +7,8 @@ src/.dep/
 obj/
 *.map
 *.sym
-
+*.swo
+*.swp
+.dep
 # Kate temp files
 *~

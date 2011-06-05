@@ -118,7 +118,7 @@ ISR (TIMER0_COMP_vect)
         --beeper;
         if(!beeper)
         {
-            PORTD &= ~(1 << PD4);
+            PORTD |= (1 << PD4);
         }
     }
     if(locked)
@@ -146,7 +146,7 @@ void goal(void *p)
             if(settings.beeper)
             {
                 beeper = 500;
-                PORTD |= (1<<PD4); /* beeper on */   
+                PORTD &= ~(1<<PD4); /* beeper on */   
             }
             locked = 2000;
             
@@ -162,8 +162,8 @@ void self_test()
     
     seven_seg_set_chr(&sseg, "8888");
     seven_seg_set_dot(&sseg, 0b1111);
-    PORTC &= ~(1<<PC7); /* err LED on */
-    PORTD |= (1<<PD4); /* beeper on */
+    PORTC &= ~(1<<PC5); /* err LED on */
+    PORTD &= ~(1<<PD4); /* beeper on */
     
     for(n = 0; n < 250; ++n)
     {
@@ -173,14 +173,14 @@ void self_test()
     
     sseg_display_goals();
     seven_seg_set_dot(&sseg, 0);
-    PORTD &= ~(1<<PD4); /* beeper off */
-    PORTC |= (1<<PC7); /* err LED off */
+    PORTD |= (1<<PD4); /* beeper off */
+    PORTC |= (1<<PC5); /* err LED off */
 }
 
 int main(void)
 {
-    const mc_pin seg_cat[] = {PC3, PC4, PC5, PC6};
-    const uint8_t display_convert_table[] = {6, 3, 7, 4, 2, 1, 0, 5};
+    const mc_pin seg_cat[] = {PC0, PC1, PC3, PC4};
+    const uint8_t display_convert_table[] = {6,5,3,1,2,0,7,4};
 
     shift_reg reg;
     button butt;
@@ -193,7 +193,7 @@ int main(void)
     
     button_init(&butt);
     
-    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
+    shift_reg_init(&reg, &PORTD, PD7, PD5, PD6);    
     seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
     
     /* unused */
@@ -209,21 +209,21 @@ int main(void)
     PORTC = 0x0;
     
     /* beeper (PD4), unused driver pins (PD4-PD7), uart, light barriers (PD2,PD3) */
-    DDRD = 0b11110000;
-    PORTD = 0x0;
+    DDRD  = 0b11110000;
+    PORTD = 0b00001100; //pullup 1
     
     /* self test */
     self_test();
     
     /* Configure buttons */
-    button_add(&butt, &PIND, PD2, goal, 0);
-    button_add(&butt, &PIND, PD3, goal, 1);
+    button_add(&butt, &PIND, PD3, goal, 0);
+    button_add(&butt, &PIND, PD2, goal, 1);
 
-    button_add(&butt, &PINB, PB0, decgoal, 0);
-    button_add(&butt, &PINB, PB1, incgoal, 0);
+    button_add(&butt, &PINB, PB3, decgoal, 0);
+    button_add(&butt, &PINB, PB4, incgoal, 0);
     
-    button_add(&butt, &PINB, PB3, decgoal, 1);
-    button_add(&butt, &PINB, PB4, incgoal, 1);
+    button_add(&butt, &PINB, PB2, decgoal, 1);
+    button_add(&butt, &PINB, PB1, incgoal, 1);
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */
@@ -237,11 +237,11 @@ int main(void)
     {
         for(n = 0; n < 10; ++n)
         {
-            //button_poll(&butt);
-            uart_cli_proc();
-            _delay_ms(500);
+            button_poll(&butt);
+            //uart_cli_proc();
+            //_delay_ms(500);
         }
-        //seven_seg_loop(&sseg);
+        seven_seg_loop(&sseg);
     }
 
     /* wird nie erreicht */
