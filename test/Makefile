@@ -77,7 +77,7 @@ OBJDIR = obj
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c uart.c seven_seg.c shift_reg.c button.c menu_entry.c
+SRC = $(TARGET).c uart.c shift_reg.c seven_seg.c button.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -270,7 +270,7 @@ AVRDUDE_PORT = /dev/ttyACM0
 #AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -392,7 +392,7 @@ build: elf hex eep lss sym
 #build: lib
 
 
-elf: $(TARGET).elf
+#elf: $(TARGET).elf
 hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss
