@@ -446,6 +446,11 @@ void menu_entry_start(void *p)
     goals[0] = 0;
     goals[1] = 0;
 
+    beeper  = 0;
+    locked  = 0;
+    error   = 0;
+    bouncer = 0;
+    
     switch_to_game(NULL);
 }
 
