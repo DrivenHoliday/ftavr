@@ -2,7 +2,7 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 
-#include <avr/delay.h>
+#include <util/delay.h>
 
 #include <stdint.h>
 

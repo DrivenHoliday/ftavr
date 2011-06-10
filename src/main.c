@@ -14,6 +14,7 @@
 #include <util/setbaud.h>
 
 #include "button.h"
+#include "config.h"
 #include "shift_reg.h"
 #include "seven_seg.h"
 #include "types.h"
@@ -101,6 +102,24 @@ void loop_display(uint16_t ms)
     }
 }
 
+void beeper_on(void)
+{
+#if CONF_BEEPER_ON == LOW
+    PORTD &= ~(1<<CONF_BEEPER_PIN);
+#else
+    PORTD |= (1<<CONF_BEEPER_PIN);
+#endif
+}
+
+void beeper_off(void)
+{
+#if CONF_BEEPER_ON == LOW
+   PORTD |= (1<<CONF_BEEPER_PIN);
+#else
+    PORTD &= ~(1<<CONF_BEEPER_PIN);
+#endif
+}
+
 void menu_error(void)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -113,7 +132,7 @@ void menu_error(void)
         if(error > 0)
         { 
             sseg.inverted = !sseg.inverted;
-            PORTD |= (1<<PD4); /* beeper on */
+            beeper_on();
         }       
     }
 }
@@ -186,9 +205,10 @@ ISR (TIMER0_COMP_vect)
         --beeper;
         if(!beeper && !error)
         {
-            PORTD &= ~(1 << PD4);
+            beeper_off();
         }
     }
+    
     if(error)
     {
         --error;
@@ -197,10 +217,11 @@ ISR (TIMER0_COMP_vect)
             sseg.inverted = !sseg.inverted;
             if (!beeper)
             {
-                PORTD &= ~(1 << PD4);
+                beeper_off();
             }
         }
     }
+    
     if(locked)
     {
         --locked;
@@ -218,6 +239,7 @@ ISR (TIMER0_COMP_vect)
             count_goal(last_goal);
         }
     }
+
     ++ud;
 }
 
@@ -257,6 +279,8 @@ void goal(void *p)
             if(!bouncer)
             {
                 count_goal(p);
+                beeper = ((uint16_t) settings.beep_time) * 100;
+                beeper_on();
             }
         }
     }
@@ -268,15 +292,15 @@ void self_test()
     
     seven_seg_set_chr(&sseg, "8888");
     seven_seg_set_dot(&sseg, 0b1111);
-    PORTC &= ~(1<<PC7); /* err LED on */
-    PORTD |= (1<<PD4); /* beeper on */
+    PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
+    beeper_on();
 
     loop_display(500);
     
     sseg_display_goals();
     seven_seg_set_dot(&sseg, 0);
-    PORTD &= ~(1<<PD4); /* beeper off */
-    PORTC |= (1<<PC7); /* err LED off */
+    beeper_off();
+    PORTC |= (1<<CONF_LED_PIN); /* err LED off */
 }
 
 void chg_menu_idx(void *p)
@@ -351,9 +375,9 @@ void sos(void)
     
     for(n = 0; n < 3; ++n)
     {
-        PORTD |= (1<<PD4); /* beeper on */
+        beeper_on();
         _delay_ms(short_s);
-        PORTD &= ~(1<<PD4); /* beeper off */
+        beeper_off();
         _delay_ms(pause_s);
     }
     
@@ -362,9 +386,9 @@ void sos(void)
     
     for(n = 0; n < 3; ++n)
     {
-        PORTD |= (1<<PD4); /* beeper on */
+        beeper_on();
         _delay_ms(long_s);
-        PORTD &= ~(1<<PD4); /* beeper off */
+        beeper_off();
         _delay_ms(pause_s);
     }
      
@@ -372,9 +396,9 @@ void sos(void)
     
     for(n = 0; n < 3; ++n)
     {
-        PORTD |= (1<<PD4); /* beeper on */
+        beeper_on();
         _delay_ms(short_s);
-        PORTD &= ~(1<<PD4); /* beeper off */
+        beeper_off();
         _delay_ms(pause_s);
     }
     
@@ -390,7 +414,7 @@ void watch_dog(void)
         MCUCSR &= ~(1<<WDRF);
         
         /* communicate error state */
-        PORTC &= ~(1<<PC7); /* err LED on */
+        PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
        
         while(1)
         {
@@ -428,8 +452,8 @@ void menu_entry_start(void *p)
 
 int main(void)
 {
-    const mc_pin seg_cat[] = {PC3, PC4, PC5, PC6};
-    const uint8_t display_convert_table[] = {6, 3, 7, 4, 2, 1, 0, 5};
+    const mc_pin seg_cat[] = CONF_DISPLAY_ELEMENT_PINS;
+    const uint8_t display_convert_table[] = CONF_DISPLAY_CONVERT_TABLE;
 
     shift_reg reg;
 
@@ -441,20 +465,24 @@ int main(void)
     settings.error_time = eeprom_read_byte(&ee_error_time);
     
      /* unused */
-    DDRA = 0x0;
+    DDRA  = 0x0;
     PORTA = 0x0;
     
     /* ISP & buttons */
-    DDRB = 0x0;
+    DDRB  = 0x0;
     PORTB = 0x0;
     
-    /* err LED (PC7), shift reg, element driver */
+    /* err LED, shift reg, element driver */
     DDRC  = 0xff;
     PORTC = 0x0;
     
     /* beeper (PD4), unused driver pins (PD5-PD7), uart (PD0, PD1), light barriers (PD2, PD3) */
-    DDRD = 0b11110000;
-    PORTD = 0b00000000;
+    DDRD  = 0b11110000;
+#if CONF_GOAL_PULL_UPS_ENABLED == TRUE
+    PORTD = 0b00001100;
+#else
+    PORTD = 0b0x0;
+#endif
    
     /* Watch Dog */
     watch_dog();
@@ -465,35 +493,35 @@ int main(void)
     button_init(&game_buttons);
     button_init(&menu_buttons);
     
-    shift_reg_init(&reg, &PORTC, PC0, PC2, PC1);    
-    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, TRUE);
+    shift_reg_init(&reg, &CONF_SHIFT_REG_PORT, CONF_SHIFT_REG_SER_PIN, CONF_SHIFT_REG_SCK_PIN, CONF_SHIFT_REG_RCK_PIN);    
+    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, CONF_SSEG_INVERT);
     
     /* self test */
     self_test();
 
     /* Configure game buttons */
-    button_add(&game_buttons, &PIND, PD2, goal, 0);
-    button_add(&game_buttons, &PIND, PD3, goal, 1);
+    button_add(&game_buttons, &PIND, CONF_GOAL_PIN_0, goal, 0);
+    button_add(&game_buttons, &PIND, CONF_GOAL_PIN_1, goal, 1);
 
-    button_add(&game_buttons, &PINB, PB0, decgoal, 0);
-    button_add(&game_buttons, &PINB, PB1, incgoal, 0);
+    button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_0, decgoal, 0);
+    button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_1, incgoal, 0);
     
-    button_add(&game_buttons, &PINB, PB2, switch_to_menu, NULL);
+    button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_menu, NULL);
     
-    button_add(&game_buttons, &PINB, PB3, decgoal, 1);
-    button_add(&game_buttons, &PINB, PB4, incgoal, 1);
+    button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_3, decgoal, 1);
+    button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_4, incgoal, 1);
 
     /* Configure menu buttons */
-    button_add(&menu_buttons, &PINB, PB0, chg_menu_idx, -1);
-    button_add(&menu_buttons, &PINB, PB1, chg_menu_idx, +1);
+    button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_0, chg_menu_idx, -1);
+    button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_1, chg_menu_idx, +1);
     
-    button_add(&menu_buttons, &PINB, PB2, switch_to_game, NULL);
+    button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_game, NULL);
 
     /* Add menu entries */
     menu_entry_init(&entries, menu_error, &sseg);
 
-    menu_entry_button_left(&entries, &menu_buttons, &PINB, PB3);
-    menu_entry_button_right(&entries, &menu_buttons, &PINB, PB4);
+    menu_entry_button_left(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_3);
+    menu_entry_button_right(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_4);
 
     // Start a new game
     menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
