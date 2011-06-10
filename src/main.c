@@ -4,7 +4,6 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <avr/eeprom.h>
 #include <avr/wdt.h>
 
 #include <util/delay.h>
@@ -17,6 +16,7 @@
 #include "config.h"
 #include "shift_reg.h"
 #include "seven_seg.h"
+#include "settings.h"
 #include "types.h"
 #include "uart.h"
 #include "menu_entry.h"
@@ -25,42 +25,10 @@
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
 #define NUM_DISPLAY_ELEMENTS (NUM_GOALS*DISPLAY_ELEMENTS_PER_GOAL)
 
-#define DEFAULT_GOALS_PER_ROUND (10)
-#define DEFAULT_BEEPER (TRUE)
-#define DEFAULT_BEEP_TIME (05)
-#define DEFAULT_LOCK_TIME (20)
-#define DEFAULT_ERROR_TIME (03)
-#define DEFAULT_BOUNCER_TIME (01)
-
 static button game_buttons;
 static button menu_buttons;
 static button *active_buttons = NULL;
 static menu_entries entries;
-
-/* Settings eeprom pointer */
-uint8_t ee_goals_per_round EEMEM = DEFAULT_GOALS_PER_ROUND;
-boolean ee_beeper EEMEM = DEFAULT_BEEPER;
-uint8_t ee_beep_time EEMEM = DEFAULT_BEEP_TIME;
-uint8_t ee_lock_time EEMEM = DEFAULT_LOCK_TIME;
-uint8_t ee_error_time EEMEM = DEFAULT_ERROR_TIME;
-uint8_t ee_bouncer_time EEMEM = DEFAULT_BOUNCER_TIME;
-
-struct settings_s
-{
-    uint8_t goals_per_round;
-    // Defines if beeper is activated (overrides beep_time)
-    boolean beeper;
-    // time in 100 ms steps
-    uint8_t beep_time;
-    // time in 100 ms steps
-    uint8_t lock_time;
-    // time in 100 ms steps
-    uint8_t error_time;
-    // time in 10 ms steps
-    uint8_t bouncer_time;
-};
-
-static struct settings_s settings = {DEFAULT_GOALS_PER_ROUND, DEFAULT_BEEPER, DEFAULT_BEEP_TIME, DEFAULT_LOCK_TIME, DEFAULT_ERROR_TIME, DEFAULT_BOUNCER_TIME};
 
 static seven_seg sseg;
 
@@ -128,7 +96,7 @@ void menu_error(void)
         {
             sseg.inverted = !sseg.inverted;
         }
-        error = settings.error_time * 100;
+        error = settings()->error_time * 100;
         if(error > 0)
         { 
             sseg.inverted = !sseg.inverted;
@@ -179,7 +147,7 @@ void sseg_display_goals(void)
 
 void incgoal(void *p)
 {
-    if(goals[(size_t)p] < settings.goals_per_round)
+    if(goals[(size_t)p] < settings()->goals_per_round)
     {
         ++goals[(size_t)p];
         sseg_display_goals();
@@ -248,15 +216,15 @@ void count_goal(size_t goal)
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         incgoal(goal);
-        if(settings.beeper && (settings.beep_time > 0))
+        if(settings()->beeper && (settings()->beep_time > 0))
         {
-            beeper = ((uint16_t) settings.beep_time) * 100;
+            beeper = ((uint16_t) settings()->beep_time) * 100;
             beeper_on();
         }
-        if (settings.lock_time > 0)
+        if (settings()->lock_time > 0)
         {
             seven_seg_set_dot(&sseg, 0b1111);
-            locked = ((uint16_t) settings.lock_time) * 100;
+            locked = ((uint16_t) settings()->lock_time) * 100;
         }
     }
 }
@@ -273,12 +241,12 @@ void goal(void *p)
         else if(!locked)
         {
             last_goal = p;
-            bouncer = ((uint16_t) settings.bouncer_time) * 10;
+            bouncer = ((uint16_t) settings()->bouncer_time) * 10;
 
             if(!bouncer)
             {
                 count_goal(p);
-                beeper = ((uint16_t) settings.beep_time) * 100;
+                beeper = ((uint16_t) settings()->beep_time) * 100;
                 beeper_on();
             }
         }
@@ -320,20 +288,10 @@ void switch_to_menu(void *p)
     menu_entry_display_entry(&entries, &sseg, 0);
 }
 
-void write_settings(void)
-{
-    eeprom_write_byte(&ee_goals_per_round, settings.goals_per_round);
-    eeprom_write_byte(&ee_beep_time, settings.beep_time);
-    eeprom_write_byte(&ee_beeper, settings.beeper);
-    eeprom_write_byte(&ee_lock_time, settings.lock_time);
-    eeprom_write_byte(&ee_error_time, settings.error_time);
-    eeprom_write_byte(&ee_bouncer_time, settings.bouncer_time);
-}
-
 void switch_to_game(void *p)
 {
     switch_buttons(&game_buttons);
-    write_settings();
+    settings_write();
     sseg_display_goals();
 }
 
@@ -424,17 +382,6 @@ void watch_dog(void)
     wdt_enable(WDTO_1S);
 }
 
-void menu_entry_reset(void *p)
-{
-    settings.goals_per_round = DEFAULT_GOALS_PER_ROUND;
-    settings.beeper = DEFAULT_BEEPER;
-    settings.beep_time = DEFAULT_BEEP_TIME;
-    settings.lock_time = DEFAULT_LOCK_TIME;
-    settings.error_time = DEFAULT_ERROR_TIME;
-    settings.bouncer_time = DEFAULT_BOUNCER_TIME;
-//    write_settings();    
-}
-
 void menu_entry_start(void *p)
 {
 
@@ -461,12 +408,7 @@ int main(void)
 
     shift_reg reg;
 
-    /* load settings */
-    settings.goals_per_round = eeprom_read_byte(&ee_goals_per_round);
-    settings.beeper = eeprom_read_byte(&ee_beeper);
-    settings.lock_time = eeprom_read_byte(&ee_lock_time);
-    settings.beep_time = eeprom_read_byte(&ee_beep_time);
-    settings.error_time = eeprom_read_byte(&ee_error_time);
+    settings_read();
     
      /* unused */
     DDRA  = 0x0;
@@ -527,22 +469,22 @@ int main(void)
     menu_entry_button_left(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_3);
     menu_entry_button_right(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_4);
 
-    // Start a new game
-    menu_entry_add(&entries, "Go", menu_entry_get_go, menu_entry_start, menu_entry_start, NULL);
-    // Goals limit
-    menu_entry_add_int(&entries, "GL", 1, 99, 0b00, &settings.goals_per_round);
-    // Lock time
-    menu_entry_add_int(&entries, "Lt", 0, 99, 0b10, &settings.lock_time);
-    // Bouncer time
-    menu_entry_add_int(&entries, "bc", 0, 99, 0b00, &settings.bouncer_time);
-    // Beeper activated (quick on/off)
-    menu_entry_add(&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &(settings.beeper));
-    // Beeper time
-    menu_entry_add_int(&entries, "Bt", 0, 99, 0b10, &settings.beep_time);
-    // Error time
-    menu_entry_add_int(&entries, "Et", 0, 99, 0b10, &settings.error_time);
-    // Resets to default
-    menu_entry_add(&entries, "Re", menu_entry_get_go, menu_entry_reset, menu_entry_reset, NULL);
+    /* Start a new game */
+    menu_entry_add    (&entries, "Go", menu_entry_get_go,     menu_entry_start,             menu_entry_start,             NULL);
+    /* Goals limit */
+    menu_entry_add_int(&entries, "GL",MIN_GOALS_PER_ROUND ,   MAX_GOALS_PER_ROUND,          0b00,                         &settings()->goals_per_round);
+    /* Lock time */
+    menu_entry_add_int(&entries, "Lt", MIN_LOCK_TIME,         MAX_LOCK_TIME,                0b10,                         &settings()->lock_time);
+    /* Bouncer time */
+    menu_entry_add_int(&entries, "bc", MIN_BOUNCER_TIME,      MAX_BOUNCER_TIME,             0b00,                         &settings()->bouncer_time);
+    /* Beeper activated (quick on/off) */
+    menu_entry_add    (&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &settings()->beeper);
+    /* Beeper time */
+    menu_entry_add_int(&entries, "Bt", MIN_BEEP_TIME,         MAX_BEEP_TIME,                0b10,                         &settings()->beep_time);
+    /* Error time */ 
+    menu_entry_add_int(&entries, "Et", MIN_ERROR_TIME,        MAX_ERROR_TIME,               0b10,                         &settings()->error_time);
+    /* Resets to default */
+    menu_entry_add    (&entries, "Re", menu_entry_get_go,     settings_reset,               settings_reset,               NULL);
     
     /* Set by default the menu to active. */
     switch_to_menu(NULL);
