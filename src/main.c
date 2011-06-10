@@ -251,7 +251,7 @@ void count_goal(size_t goal)
         if(settings.beeper && (settings.beep_time > 0))
         {
             beeper = ((uint16_t) settings.beep_time) * 100;
-            PORTD |= (1<<PD4); /* beeper on */
+            beeper_on();
         }
         if (settings.lock_time > 0)
         {
@@ -265,11 +265,10 @@ void goal(void *p)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        //TODO: Handle bouncer on the other side
         if(bouncer)
         {
+            /* bouncer detected */
             bouncer = 0;
-            // bouncer detected
         }
         else if(!locked)
         {
@@ -481,7 +480,7 @@ int main(void)
 #if CONF_GOAL_PULL_UPS_ENABLED == TRUE
     PORTD = 0b00001100;
 #else
-    PORTD = 0b0x0;
+    PORTD = 0x0;
 #endif
    
     /* Watch Dog */
