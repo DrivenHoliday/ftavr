@@ -18,7 +18,6 @@ static boolean settings_valid()
     if( BETWEEN(settings()->goals_per_round, MIN_GOALS_PER_ROUND, MAX_GOALS_PER_ROUND) &&
         BETWEEN(settings()->beep_time,       MIN_BEEP_TIME,       MAX_BEEP_TIME) &&
         BETWEEN(settings()->lock_time,       MIN_LOCK_TIME,       MAX_LOCK_TIME) &&
-        BETWEEN(settings()->error_time,      MIN_ERROR_TIME,      MAX_ERROR_TIME) &&
         BETWEEN(settings()->bouncer_time,    MIN_BOUNCER_TIME,    MAX_BOUNCER_TIME) )
     {
         return TRUE;
@@ -50,7 +49,6 @@ void settings_reset(void)
     settings()->beeper          = DEFAULT_BEEPER;
     settings()->beep_time       = DEFAULT_BEEP_TIME;
     settings()->lock_time       = DEFAULT_LOCK_TIME;
-    settings()->error_time      = DEFAULT_ERROR_TIME;
     settings()->bouncer_time    = DEFAULT_BOUNCER_TIME;
     
     settings_write();

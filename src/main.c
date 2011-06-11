@@ -37,7 +37,6 @@ static volatile uint8_t last_goal = 255;
 
 static volatile uint16_t beeper = 0;
 static volatile uint16_t locked = 0;
-static volatile uint16_t error = 0;
 static volatile uint16_t bouncer = 0;
 
 static volatile uint8_t ud = 0;
@@ -153,20 +152,15 @@ void beeper_off(void)
 #endif
 }
 
-void menu_error(void)
+void activate_beep(void)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        if(error > 0)
+        if(settings()->beeper && (settings()->beep_time > 0))
         {
-            sseg.inverted = !sseg.inverted;
-        }
-        error = settings()->error_time * 100;
-        if(error > 0)
-        { 
-            sseg.inverted = !sseg.inverted;
+            beeper = ((uint16_t) settings()->beep_time) * 100;
             beeper_on();
-        }       
+        }
     }
 }
 
@@ -232,22 +226,9 @@ ISR (TIMER0_COMP_vect)
     if(beeper)
     {
         --beeper;
-        if(!beeper && !error)
+        if(!beeper)
         {
             beeper_off();
-        }
-    }
-    
-    if(error)
-    {
-        --error;
-        if(!error)
-        {
-            sseg.inverted = !sseg.inverted;
-            if (!beeper)
-            {
-                beeper_off();
-            }
         }
     }
     
@@ -278,11 +259,7 @@ void count_goal(size_t goal)
     {
         incgoal(goal);
         
-        if(settings()->beeper && (settings()->beep_time > 0))
-        {
-            beeper = ((uint16_t) settings()->beep_time) * 100;
-            beeper_on();
-        }
+        activate_beep();
         
         if(settings()->lock_time > 0)
         {
@@ -388,7 +365,6 @@ void menu_entry_start(void *p)
 
         beeper  = 0;
         locked  = 0;
-        error   = 0;
         bouncer = 0;
     }
     
@@ -458,7 +434,7 @@ int main(void)
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_game, NULL);
 
     /* Add menu entries */
-    menu_entry_init(&entries, menu_error, &sseg);
+    menu_entry_init(&entries, activate_beep, &sseg);
 
     menu_entry_button_left(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_3);
     menu_entry_button_right(&entries, &menu_buttons, &PINB, CONF_BUTTON_PIN_4);
@@ -475,8 +451,6 @@ int main(void)
     menu_entry_add    (&entries, "Ba", menu_entry_get_active, menu_entry_value_bool_toogle, menu_entry_value_bool_toogle, &settings()->beeper);
     /* Beeper time */
     menu_entry_add_int(&entries, "Bt", MIN_BEEP_TIME,         MAX_BEEP_TIME,                0b10,                         &settings()->beep_time);
-    /* Error time */ 
-    menu_entry_add_int(&entries, "Et", MIN_ERROR_TIME,        MAX_ERROR_TIME,               0b10,                         &settings()->error_time);
     /* Resets to default */
     menu_entry_add    (&entries, "Re", menu_entry_get_go,     settings_reset,               settings_reset,               NULL);
     

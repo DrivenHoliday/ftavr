@@ -17,10 +17,6 @@
 #define MIN_LOCK_TIME           (00)
 #define MAX_LOCK_TIME           (99)
 
-#define DEFAULT_ERROR_TIME      (03)
-#define MIN_ERROR_TIME          (00)
-#define MAX_ERROR_TIME          (99)
-
 #define DEFAULT_BOUNCER_TIME    (10)
 #define MIN_BOUNCER_TIME        (00)
 #define MAX_BOUNCER_TIME        (99)
@@ -37,9 +33,6 @@ struct settings_s
     
     /* time in 100 ms steps */
     uint8_t lock_time;
-    
-    /* time in 100 ms steps */
-    uint8_t error_time;
     
     /* time in 10 ms steps */
     uint8_t bouncer_time;
