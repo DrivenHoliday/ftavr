@@ -40,6 +40,71 @@ static volatile uint16_t locked = 0;
 static volatile uint16_t error = 0;
 static volatile uint16_t bouncer = 0;
 
+static volatile uint8_t ud = 0;
+
+void sos(void)
+{
+    const uint16_t short_s = 120;
+    const uint16_t long_s = short_s * 3;
+    
+    const uint16_t pause_s = short_s;     /* symbole */
+    const uint16_t pause_c = long_s - pause_s;      /* character */
+    const uint16_t pause_w = (short_s * 7) - pause_s; /* word */
+    
+    size_t n = 0;
+    
+    for(n = 0; n < 3; ++n)
+    {
+        beeper_on();
+        _delay_ms(short_s);
+        beeper_off();
+        _delay_ms(pause_s);
+    }
+    
+    _delay_ms(pause_c);
+    
+    
+    for(n = 0; n < 3; ++n)
+    {
+        beeper_on();
+        _delay_ms(long_s);
+        beeper_off();
+        _delay_ms(pause_s);
+    }
+     
+    _delay_ms(pause_c);
+    
+    for(n = 0; n < 3; ++n)
+    {
+        beeper_on();
+        _delay_ms(short_s);
+        beeper_off();
+        _delay_ms(pause_s);
+    }
+    
+    _delay_ms(pause_w);
+}
+
+void watch_dog(void)
+{
+    /* if watch dog reset */
+    if(MCUCSR & (1<<WDRF))
+    {
+        /* delete watch dog reset flag */
+        MCUCSR &= ~(1<<WDRF);
+        
+        /* communicate error state */
+        PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
+       
+        while(1)
+        {
+            sos();
+        }
+    }
+    
+    wdt_enable(WDTO_1S);
+}
+
 void ntostr(char *result, uint8_t n)
 {
     /* max val "255" + \0  = 4 chars*/
@@ -121,8 +186,6 @@ void sseg_set_last_goal_dots(void)
             }
         }
         
-        uart_buf_puti8(dots);
-        
         seven_seg_set_dot(&sseg, dots);
     }
 }
@@ -162,8 +225,6 @@ void decgoal(void *p)
         sseg_display_goals();
     }
 }
-
-static volatile uint8_t ud = 0;
 
 /* Timer 0 interrupt vector, called every 1 ms */
 ISR (TIMER0_COMP_vect)
@@ -216,12 +277,14 @@ void count_goal(size_t goal)
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         incgoal(goal);
+        
         if(settings()->beeper && (settings()->beep_time > 0))
         {
             beeper = ((uint16_t) settings()->beep_time) * 100;
             beeper_on();
         }
-        if (settings()->lock_time > 0)
+        
+        if(settings()->lock_time > 0)
         {
             seven_seg_set_dot(&sseg, 0b1111);
             locked = ((uint16_t) settings()->lock_time) * 100;
@@ -233,24 +296,20 @@ void goal(void *p)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
+        /* bounce detected */
         if(bouncer)
         {
-            /* bouncer detected */
             bouncer = 0;
         }
-        else if(!locked)
+        else
         {
-            last_goal = p;
-            bouncer = ((uint16_t) settings()->bouncer_time) * 10;
-
-            if(!bouncer)
+            if(!locked)
             {
-                count_goal(p);
-                beeper = ((uint16_t) settings()->beep_time) * 100;
-                beeper_on();
+                last_goal = p;
+                bouncer = ((uint16_t) settings()->bouncer_time) * 10;
             }
         }
-    }
+    }   
 }
 
 void self_test()
@@ -319,84 +378,19 @@ void menu_entry_get_active(void *p, char *ch, uint8_t *dots)
     }
 }
 
-void sos(void)
-{
-    const uint16_t short_s = 120;
-    const uint16_t long_s = short_s * 3;
-    
-    const uint16_t pause_s = short_s;     /* symbole */
-    const uint16_t pause_c = long_s - pause_s;      /* character */
-    const uint16_t pause_w = (short_s * 7) - pause_s; /* word */
-    
-    size_t n = 0;
-    
-    for(n = 0; n < 3; ++n)
-    {
-        beeper_on();
-        _delay_ms(short_s);
-        beeper_off();
-        _delay_ms(pause_s);
-    }
-    
-    _delay_ms(pause_c);
-    
-    
-    for(n = 0; n < 3; ++n)
-    {
-        beeper_on();
-        _delay_ms(long_s);
-        beeper_off();
-        _delay_ms(pause_s);
-    }
-     
-    _delay_ms(pause_c);
-    
-    for(n = 0; n < 3; ++n)
-    {
-        beeper_on();
-        _delay_ms(short_s);
-        beeper_off();
-        _delay_ms(pause_s);
-    }
-    
-    _delay_ms(pause_w);
-}
-
-void watch_dog(void)
-{
-    /* if watch dog reset */
-    if(MCUCSR & (1<<WDRF))
-    {
-        /* delete watch dog reset flag */
-        MCUCSR &= ~(1<<WDRF);
-        
-        /* communicate error state */
-        PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
-       
-        while(1)
-        {
-            sos();
-        }
-    }
-    
-    wdt_enable(WDTO_1S);
-}
-
 void menu_entry_start(void *p)
 {
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        last_goal = 255;
+        goals[0] = 0;
+        goals[1] = 0;
 
-    /*******************/
-    //TODO: START GAME //
-    /*******************/
-
-    last_goal = 255;
-    goals[0] = 0;
-    goals[1] = 0;
-
-    beeper  = 0;
-    locked  = 0;
-    error   = 0;
-    bouncer = 0;
+        beeper  = 0;
+        locked  = 0;
+        error   = 0;
+        bouncer = 0;
+    }
     
     switch_to_game(NULL);
 }
@@ -422,7 +416,7 @@ int main(void)
     DDRC  = 0xff;
     PORTC = 0x0;
     
-    /* beeper (PD4), unused driver pins (PD5-PD7), uart (PD0, PD1), light barriers (PD2, PD3) */
+    /* beeper, unused driver pins, uart (PD0, PD1), light barriers (PD2, PD3) */
     DDRD  = 0b11110000;
 #if CONF_GOAL_PULL_UPS_ENABLED == TRUE
     PORTD = 0b00001100;
@@ -472,7 +466,7 @@ int main(void)
     /* Start a new game */
     menu_entry_add    (&entries, "Go", menu_entry_get_go,     menu_entry_start,             menu_entry_start,             NULL);
     /* Goals limit */
-    menu_entry_add_int(&entries, "GL",MIN_GOALS_PER_ROUND ,   MAX_GOALS_PER_ROUND,          0b00,                         &settings()->goals_per_round);
+    menu_entry_add_int(&entries, "GL", MIN_GOALS_PER_ROUND,   MAX_GOALS_PER_ROUND,          0b00,                         &settings()->goals_per_round);
     /* Lock time */
     menu_entry_add_int(&entries, "Lt", MIN_LOCK_TIME,         MAX_LOCK_TIME,                0b10,                         &settings()->lock_time);
     /* Bouncer time */
@@ -486,8 +480,8 @@ int main(void)
     /* Resets to default */
     menu_entry_add    (&entries, "Re", menu_entry_get_go,     settings_reset,               settings_reset,               NULL);
     
-    /* Set by default the menu to active. */
-    switch_to_menu(NULL);
+    /* Start new game. */
+    menu_entry_start(NULL);
 
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */

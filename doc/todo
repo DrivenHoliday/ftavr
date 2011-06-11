@@ -1,4 +1,3 @@
-- eeprom wirte block
 - uart_cli
 - stats
 - end of match (https://github.com/DrivenHoliday/ftavr/issues/1)
