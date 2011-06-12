@@ -27,6 +27,7 @@
 
 static button game_buttons;
 static button menu_buttons;
+static button end_buttons;
 static button *active_buttons = NULL;
 static menu_entries entries;
 
@@ -128,6 +129,7 @@ void loop_display(uint16_t ms)
 {
     while (ms)
     {
+        wdt_reset();
         seven_seg_loop(&sseg);
         _delay_ms(1);
         --ms;
@@ -253,11 +255,38 @@ ISR (TIMER0_COMP_vect)
     ++ud;
 }
 
+void game_end(void)
+{
+    seven_seg_set_chr(&sseg, "Ende");
+    seven_seg_set_dot(&sseg, 0x0);
+    
+    beeper_on();
+    loop_display(((uint16_t) settings()->beep_time) * 100);
+    beeper_off();
+    loop_display(200);
+    beeper_on();
+    loop_display(((uint16_t) settings()->beep_time) * 100);
+    beeper_off();
+    
+    switch_buttons(&end_buttons);
+}
+
+void end_game_end(void *p)
+{
+    switch_to_game(NULL);
+}
+
 void count_goal(size_t goal)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         incgoal(goal);
+        
+        if(goals[goal] >= settings()->goals_per_round)
+        {
+            game_end();
+            return;
+        }
         
         activate_beep();
         
@@ -283,7 +312,15 @@ void goal(void *p)
             if(!locked)
             {
                 last_goal = p;
-                bouncer = ((uint16_t) settings()->bouncer_time) * 10;
+                
+                if(settings()->bouncer_time)
+                {
+                    bouncer = ((uint16_t) settings()->bouncer_time) * 10;
+                }
+                else
+                {
+                    count_goal(p);
+                }
             }
         }
     }   
@@ -432,6 +469,13 @@ int main(void)
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_1, chg_menu_idx, +1);
     
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_game, NULL);
+    
+    /* Configure game end buttons */
+    button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_0, end_game_end, NULL);
+    button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_1, end_game_end, NULL);
+    button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_2, end_game_end, NULL);
+    button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_3, end_game_end, NULL);
+    button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_4, end_game_end, NULL);
 
     /* Add menu entries */
     menu_entry_init(&entries, activate_beep, &sseg);
