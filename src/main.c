@@ -260,13 +260,16 @@ void game_end(void)
     seven_seg_set_chr(&sseg, "Ende");
     seven_seg_set_dot(&sseg, 0x0);
     
-    beeper_on();
-    loop_display(((uint16_t) settings()->beep_time) * 100);
-    beeper_off();
-    loop_display(200);
-    beeper_on();
-    loop_display(((uint16_t) settings()->beep_time) * 100);
-    beeper_off();
+    if(settings()->beeper && (settings()->beep_time > 0))
+    {
+        beeper_on();
+        loop_display(((uint16_t) settings()->beep_time) * 100);
+        beeper_off();
+        loop_display(200);
+        beeper_on();
+        loop_display(((uint16_t) settings()->beep_time) * 100);
+        beeper_off();
+    }
     
     switch_buttons(&end_buttons);
 }
