@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg13378"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="manual_menu_display.svg">
+  <defs
+     id="defs13380" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="226.46408"
+     inkscape:cy="347.26657"
+     inkscape:document-units="pt"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:snap-global="true"
+     showguides="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="993"
+     inkscape:window-x="1680"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid13596" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata13383">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ACDEF-9"
+       transform="matrix(5,0,0,5,25,17.362183)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#ff0000"
+         id="polygon8582-3" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon8584-2" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon8586-4" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon8588-3" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon8590-7" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon8592-1" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#cccccc"
+         id="polygon8594-2" />
+      <label
+         id="label8596-2">acdef</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="CDEG"
+       transform="matrix(5,0,0,5,90,17.362183)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="9,1 8,2 2,2 1,1 2,0 8,0 "
+         style="fill:#cccccc"
+         id="polygon9112" />
+      <polygon
+         points="9,9 8,8 8,2 9,1 10,2 10,8 "
+         style="fill:#cccccc"
+         id="polygon9114" />
+      <polygon
+         points="9,17 8,16 8,10 9,9 10,10 10,16 "
+         style="fill:#ff0000"
+         id="polygon9116" />
+      <polygon
+         points="1,17 2,16 8,16 9,17 8,18 2,18 "
+         style="fill:#ff0000"
+         id="polygon9118" />
+      <polygon
+         points="1,9 2,10 2,16 1,17 0,16 0,10 "
+         style="fill:#ff0000"
+         id="polygon9120" />
+      <polygon
+         points="1,1 2,2 2,8 1,9 0,8 0,2 "
+         style="fill:#cccccc"
+         id="polygon9122" />
+      <polygon
+         points="9,9 8,10 2,10 1,9 2,8 8,8 "
+         style="fill:#ff0000"
+         id="polygon9124" />
+      <label
+         id="label9126">cdeg</label>
+    </g>
+    <g
+       transform="matrix(5,0,0,5,155,17.362183)"
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="empty"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="1,1 2,0 8,0 9,1 8,2 2,2 "
+         style="fill:#cccccc"
+         id="polygon7542" />
+      <polygon
+         points="9,1 10,2 10,8 9,9 8,8 8,2 "
+         style="fill:#cccccc"
+         id="polygon7544" />
+      <polygon
+         points="9,9 10,10 10,16 9,17 8,16 8,10 "
+         style="fill:#cccccc"
+         id="polygon7546" />
+      <polygon
+         points="9,17 8,18 2,18 1,17 2,16 8,16 "
+         style="fill:#cccccc"
+         id="polygon7548" />
+      <polygon
+         points="1,17 0,16 0,10 1,9 2,10 2,16 "
+         style="fill:#cccccc"
+         id="polygon7550" />
+      <polygon
+         points="1,9 0,8 0,2 1,1 2,2 2,8 "
+         style="fill:#cccccc"
+         id="polygon7552" />
+      <polygon
+         points="1,9 2,8 8,8 9,9 8,10 2,10 "
+         style="fill:#cccccc"
+         id="polygon7554" />
+      <label
+         id="label7556">(empty)</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ABEG"
+       transform="matrix(5,0,0,5,220,17.362183)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="1,1 2,0 8,0 9,1 8,2 2,2 "
+         style="fill:#ff0000"
+         id="polygon8959" />
+      <polygon
+         points="9,1 10,2 10,8 9,9 8,8 8,2 "
+         style="fill:#ff0000"
+         id="polygon8961" />
+      <polygon
+         points="9,9 10,10 10,16 9,17 8,16 8,10 "
+         style="fill:#cccccc"
+         id="polygon8963" />
+      <polygon
+         points="9,17 8,18 2,18 1,17 2,16 8,16 "
+         style="fill:#cccccc"
+         id="polygon8965" />
+      <polygon
+         points="1,17 0,16 0,10 1,9 2,10 2,16 "
+         style="fill:#ff0000"
+         id="polygon8967" />
+      <polygon
+         points="1,9 0,8 0,2 1,1 2,2 2,8 "
+         style="fill:#cccccc"
+         id="polygon8969" />
+      <polygon
+         points="1,9 2,8 8,8 9,9 8,10 2,10 "
+         style="fill:#ff0000"
+         id="polygon8971" />
+      <label
+         id="label8973">abeg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="DEF"
+       transform="matrix(5,0,0,5,90,122.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon8497" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon8499" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#cccccc"
+         id="polygon8501" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon8503" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon8505" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon8507" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#cccccc"
+         id="polygon8509" />
+      <label
+         id="label8511">def</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ACDEF-9-9"
+       transform="matrix(5,0,0,5,25,122.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#ff0000"
+         id="polygon8582-3-0" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon8584-2-4" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon8586-4-0" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon8588-3-1" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon8590-7-3" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon8592-1-7" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#cccccc"
+         id="polygon8594-2-4" />
+      <label
+         id="label8596-2-1">acdef</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708"
+       transform="matrix(5,0,0,5,155,122.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722" />
+      <label
+         id="label9724">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-2"
+       transform="matrix(5,0,0,5,220,122.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710-1" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712-0" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714-5" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716-8" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718-5" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720-5" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722-0" />
+      <label
+         id="label9724-7">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="DEF-7"
+       transform="matrix(5,0,0,5,25,232.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="1,1 2,0 8,0 9,1 8,2 2,2 "
+         style="fill:#cccccc"
+         id="polygon8497-7" />
+      <polygon
+         points="9,1 10,2 10,8 9,9 8,8 8,2 "
+         style="fill:#cccccc"
+         id="polygon8499-9" />
+      <polygon
+         points="9,9 10,10 10,16 9,17 8,16 8,10 "
+         style="fill:#cccccc"
+         id="polygon8501-8" />
+      <polygon
+         points="9,17 8,18 2,18 1,17 2,16 8,16 "
+         style="fill:#ff0000"
+         id="polygon8503-1" />
+      <polygon
+         points="1,17 0,16 0,10 1,9 2,10 2,16 "
+         style="fill:#ff0000"
+         id="polygon8505-0" />
+      <polygon
+         points="1,9 0,8 0,2 1,1 2,2 2,8 "
+         style="fill:#ff0000"
+         id="polygon8507-7" />
+      <polygon
+         points="1,9 2,8 8,8 9,9 8,10 2,10 "
+         style="fill:#cccccc"
+         id="polygon8509-6" />
+      <label
+         id="label8511-0">def</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="DEFG"
+       transform="matrix(5,0,0,5,90,232.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9590" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9592" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#cccccc"
+         id="polygon9594" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9596" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9598" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9600" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9602" />
+      <label
+         id="label9604">defg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-6"
+       transform="matrix(5,0,0,5,155,232.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710-0" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712-6" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714-4" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716-0" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718-9" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720-4" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722-5" />
+      <label
+         id="label9724-4">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-2-6"
+       transform="matrix(5,0,0,5,220,232.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710-1-6" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712-0-3" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714-5-9" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716-8-9" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718-5-5" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720-5-2" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722-0-1" />
+      <label
+         id="label9724-7-3">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="CDEFG"
+       transform="matrix(5,0,0,5,25,337.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9658" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9660" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon9662" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9664" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9666" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9668" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9670" />
+      <label
+         id="label9672">cdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="DEG"
+       transform="matrix(5,0,0,5,90,337.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9044" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9046" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#cccccc"
+         id="polygon9048" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9050" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9052" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#cccccc"
+         id="polygon9054" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9056" />
+      <label
+         id="label9058">deg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-6-6"
+       transform="matrix(5,0,0,5,155,337.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#ff0000"
+         id="polygon9710-0-9" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#ff0000"
+         id="polygon9712-6-2" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon9714-4-9" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9716-0-0" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9718-9-3" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9720-4-0" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9722-5-3" />
+      <label
+         id="label9724-4-3">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-2-6-7"
+       transform="matrix(5,0,0,5,220,337.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#ff0000"
+         id="polygon9710-1-6-9" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#ff0000"
+         id="polygon9712-0-3-4" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon9714-5-9-9" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9716-8-9-9" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9718-5-5-1" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9720-5-2-9" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9722-0-1-4" />
+      <label
+         id="label9724-7-3-2">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="CDEFG-1"
+       transform="matrix(5,0,0,5,25,442.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9658-1" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9660-8" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon9662-6" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9664-4" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9666-3" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9668-4" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9670-7" />
+      <label
+         id="label9672-7">cdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ABCEFG"
+       transform="matrix(5,0,0,5,90,442.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9573" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9575" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9577" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#cccccc"
+         id="polygon9579" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9581" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9583" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9585" />
+      <label
+         id="label9587">abcefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="CDEG-9"
+       transform="matrix(5,0,0,5,155,442.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="9,1 8,2 2,2 1,1 2,0 8,0 "
+         style="fill:#cccccc"
+         id="polygon9112-1" />
+      <polygon
+         points="9,9 8,8 8,2 9,1 10,2 10,8 "
+         style="fill:#cccccc"
+         id="polygon9114-2" />
+      <polygon
+         points="9,17 8,16 8,10 9,9 10,10 10,16 "
+         style="fill:#ff0000"
+         id="polygon9116-3" />
+      <polygon
+         points="1,17 2,16 8,16 9,17 8,18 2,18 "
+         style="fill:#ff0000"
+         id="polygon9118-1" />
+      <polygon
+         points="1,9 2,10 2,16 1,17 0,16 0,10 "
+         style="fill:#ff0000"
+         id="polygon9120-8" />
+      <polygon
+         points="1,1 2,2 2,8 1,9 0,8 0,2 "
+         style="fill:#cccccc"
+         id="polygon9122-1" />
+      <polygon
+         points="9,9 8,10 2,10 1,9 2,8 8,8 "
+         style="fill:#ff0000"
+         id="polygon9124-3" />
+      <label
+         id="label9126-8">cdeg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ACEFG"
+       transform="matrix(5,0,0,5,220,442.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9539" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#cccccc"
+         id="polygon9541" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9543" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#cccccc"
+         id="polygon9545" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9547" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9549" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9551" />
+      <label
+         id="label9553">acefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="DEFG-6"
+       transform="matrix(5,0,0,5,90,542.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9590-6" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9592-5" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#cccccc"
+         id="polygon9594-3" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9596-7" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9598-6" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9600-9" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9602-7" />
+      <label
+         id="label9604-2">defg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-6-64"
+       transform="matrix(5,0,0,5,155,542.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710-0-0" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712-6-7" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714-4-5" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716-0-4" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718-9-0" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720-4-1" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722-5-2" />
+      <label
+         id="label9724-4-8">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="g9708-2-6-0"
+       transform="matrix(5,0,0,5,220,542.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9710-1-6-1" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9712-0-3-5" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#ff0000"
+         id="polygon9714-5-9-2" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9716-8-9-0" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9718-5-5-7" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9720-5-2-1" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9722-0-1-6" />
+      <label
+         id="label9724-7-3-4">abcdefg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="CDEFG-1-9"
+       transform="matrix(5,0,0,5,25,542.36218)"
+       inkscape:export-filename="/home/florian/ABEG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="2,2 1,1 2,0 8,0 9,1 8,2 "
+         style="fill:#cccccc"
+         id="polygon9658-1-2" />
+      <polygon
+         points="8,2 9,1 10,2 10,8 9,9 8,8 "
+         style="fill:#cccccc"
+         id="polygon9660-8-8" />
+      <polygon
+         points="8,10 9,9 10,10 10,16 9,17 8,16 "
+         style="fill:#ff0000"
+         id="polygon9662-6-9" />
+      <polygon
+         points="8,16 9,17 8,18 2,18 1,17 2,16 "
+         style="fill:#ff0000"
+         id="polygon9664-4-9" />
+      <polygon
+         points="2,16 1,17 0,16 0,10 1,9 2,10 "
+         style="fill:#ff0000"
+         id="polygon9666-3-8" />
+      <polygon
+         points="2,8 1,9 0,8 0,2 1,1 2,2 "
+         style="fill:#ff0000"
+         id="polygon9668-4-9" />
+      <polygon
+         points="2,10 1,9 2,8 8,8 9,9 8,10 "
+         style="fill:#ff0000"
+         id="polygon9670-7-3" />
+      <label
+         id="label9672-7-6">cdefg</label>
+    </g>
+    <g
+       transform="matrix(5,0,0,5,155,647.36218)"
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="empty-0"
+       inkscape:export-filename="/home/florian/ADEFG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,0 9,1 8,2 2,2 1,1 2,0 "
+         style="fill:#cccccc"
+         id="polygon7542-5" />
+      <polygon
+         points="10,8 9,9 8,8 8,2 9,1 10,2 "
+         style="fill:#cccccc"
+         id="polygon7544-5" />
+      <polygon
+         points="10,16 9,17 8,16 8,10 9,9 10,10 "
+         style="fill:#cccccc"
+         id="polygon7546-3" />
+      <polygon
+         points="2,18 1,17 2,16 8,16 9,17 8,18 "
+         style="fill:#cccccc"
+         id="polygon7548-9" />
+      <polygon
+         points="0,10 1,9 2,10 2,16 1,17 0,16 "
+         style="fill:#cccccc"
+         id="polygon7550-1" />
+      <polygon
+         points="0,2 1,1 2,2 2,8 1,9 0,8 "
+         style="fill:#cccccc"
+         id="polygon7552-5" />
+      <polygon
+         points="8,8 9,9 8,10 2,10 1,9 2,8 "
+         style="fill:#cccccc"
+         id="polygon7554-0" />
+      <label
+         id="label7556-4">(empty)</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ABEG-9"
+       transform="matrix(5,0,0,5,220,647.36218)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:export-filename="/home/florian/ADEFG.png">
+      <polygon
+         points="2,0 8,0 9,1 8,2 2,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon8959-6" />
+      <polygon
+         points="10,2 10,8 9,9 8,8 8,2 9,1 "
+         style="fill:#ff0000"
+         id="polygon8961-7" />
+      <polygon
+         points="10,10 10,16 9,17 8,16 8,10 9,9 "
+         style="fill:#cccccc"
+         id="polygon8963-4" />
+      <polygon
+         points="8,18 2,18 1,17 2,16 8,16 9,17 "
+         style="fill:#cccccc"
+         id="polygon8965-3" />
+      <polygon
+         points="0,16 0,10 1,9 2,10 2,16 1,17 "
+         style="fill:#ff0000"
+         id="polygon8967-0" />
+      <polygon
+         points="0,8 0,2 1,1 2,2 2,8 1,9 "
+         style="fill:#cccccc"
+         id="polygon8969-9" />
+      <polygon
+         points="2,8 8,8 9,9 8,10 2,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon8971-6" />
+      <label
+         id="label8973-6">abeg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="EG"
+       transform="matrix(5,0,0,5,25,647.36218)"
+       inkscape:export-filename="/home/florian/ADEFG.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#cccccc"
+         id="polygon8908" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#cccccc"
+         id="polygon8910" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#cccccc"
+         id="polygon8912" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#cccccc"
+         id="polygon8914" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon8916" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#cccccc"
+         id="polygon8918" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon8920" />
+      <label
+         id="label8922">eg</label>
+    </g>
+    <g
+       style="fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter"
+       id="ADEFG"
+       transform="matrix(5,0,0,5,90,647.36218)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:export-filename="/home/florian/ADEFG.png">
+      <polygon
+         points="8,2 2,2 1,1 2,0 8,0 9,1 "
+         style="fill:#ff0000"
+         id="polygon9607" />
+      <polygon
+         points="8,8 8,2 9,1 10,2 10,8 9,9 "
+         style="fill:#cccccc"
+         id="polygon9609" />
+      <polygon
+         points="8,16 8,10 9,9 10,10 10,16 9,17 "
+         style="fill:#cccccc"
+         id="polygon9611" />
+      <polygon
+         points="2,16 8,16 9,17 8,18 2,18 1,17 "
+         style="fill:#ff0000"
+         id="polygon9613" />
+      <polygon
+         points="2,10 2,16 1,17 0,16 0,10 1,9 "
+         style="fill:#ff0000"
+         id="polygon9615" />
+      <polygon
+         points="2,2 2,8 1,9 0,8 0,2 1,1 "
+         style="fill:#ff0000"
+         id="polygon9617" />
+      <polygon
+         points="8,10 2,10 1,9 2,8 8,8 9,9 "
+         style="fill:#ff0000"
+         id="polygon9619" />
+      <label
+         id="label9621">adefg</label>
+    </g>
+  </g>
+</svg>
