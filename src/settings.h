@@ -4,21 +4,21 @@
 #include "types.h"
 
 #define DEFAULT_GOALS_PER_ROUND (10)
-#define MIN_GOALS_PER_ROUND     (01)
+#define MIN_GOALS_PER_ROUND      (1)
 #define MAX_GOALS_PER_ROUND     (99)
 
-#define DEFAULT_BEEPER          (TRUE)
+#define DEFAULT_BEEPER        (TRUE)
 
-#define DEFAULT_BEEP_TIME       (05)
-#define MIN_BEEP_TIME           (01)
+#define DEFAULT_BEEP_TIME        (5)
+#define MIN_BEEP_TIME            (1)
 #define MAX_BEEP_TIME           (99)
 
 #define DEFAULT_LOCK_TIME       (20)
-#define MIN_LOCK_TIME           (00)
+#define MIN_LOCK_TIME            (0)
 #define MAX_LOCK_TIME           (99)
 
 #define DEFAULT_BOUNCER_TIME    (10)
-#define MIN_BOUNCER_TIME        (00)
+#define MIN_BOUNCER_TIME         (0)
 #define MAX_BOUNCER_TIME        (99)
 
 struct settings_s
