@@ -18,13 +18,14 @@ struct seven_seg_s
 {
     uint8_t num_seg;
     mc_port port;
-    
+
     shift_reg *seg_ano;
     mc_pin seg_cat[SEVEN_SEG_MAX_NUM_ELEM];
-    
+
     uint8_t table[8];
+
     boolean inverted;
-    
+
     //private
     uint8_t curr;
     uint8_t val[SEVEN_SEG_MAX_NUM_ELEM];

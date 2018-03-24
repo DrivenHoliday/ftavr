@@ -36,7 +36,7 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *s
 }
 
 void seven_seg_set_chr(seven_seg *sseg, char val[])
-{    
+{
     for(size_t n = 0; n < sseg->num_seg; ++n)
     {
         sseg->val[n] = convert(char_to_generic(val[n]), sseg);
@@ -52,7 +52,7 @@ void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
 {
     int8_t n = sseg->num_seg - 1;
     const uint8_t dot = convert(0b10000000, sseg);
-    
+
     for(;n >= 0; --n)
     {
         if(dots & 1)
@@ -61,9 +61,9 @@ void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
         }
         else
         {
-            sseg->val[n] &= ~dot;  
+            sseg->val[n] &= ~dot;
         }
-        
+
         dots >>= 1;
     }
 }
@@ -72,7 +72,7 @@ void seven_seg_loop(seven_seg *sseg)
 {
     /* current element off */
     *sseg->port &= ~(1<<sseg->seg_cat[sseg->curr]);
-  
+
     /* next element */
     sseg->curr = (sseg->curr + 1) % sseg->num_seg;
 
@@ -171,7 +171,7 @@ static uint8_t convert(uint8_t v, seven_seg *sseg)
     uint8_t result = 0;
     uint8_t mask = 128;
     size_t n = 0;
-    
+
     if(v)
     {
         for(;n < 8; ++n)
@@ -183,6 +183,6 @@ static uint8_t convert(uint8_t v, seven_seg *sseg)
             mask >>= 1;
         }
     }
-    
+
     return result;
 }

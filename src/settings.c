@@ -31,7 +31,7 @@ static boolean settings_valid()
 void settings_read(void)
 {
     eeprom_read_block(settings(), &ee_settings, sizeof(ee_settings));
-    
+
     if(!settings_valid())
     {
         settings_reset();
@@ -50,6 +50,6 @@ void settings_reset(void)
     settings()->beep_time       = DEFAULT_BEEP_TIME;
     settings()->lock_time       = DEFAULT_LOCK_TIME;
     settings()->bouncer_time    = DEFAULT_BOUNCER_TIME;
-    
+
     settings_write();
 }

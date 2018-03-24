@@ -15,7 +15,7 @@ void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *
     butt->buttons[butt->num].func = func;
     butt->buttons[butt->num].payload = payload;
     butt->buttons[butt->num].status = (*butt->buttons[butt->num].port & (1<<butt->buttons[butt->num].pin));
-    
+
     ++butt->num;
     assert(butt->num <= BUTTON_MAX_NUM_BUTTON);
 }
@@ -24,7 +24,7 @@ void button_poll_action(button *butt, boolean action)
 {
     size_t n = 0;
     boolean curr;
-    
+
     for(;n < butt->num; ++n)
     {
         curr = *butt->buttons[n].port & (1<<butt->buttons[n].pin);

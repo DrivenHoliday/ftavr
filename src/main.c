@@ -46,13 +46,13 @@ void sos(void)
 {
     const uint16_t short_s = 120;
     const uint16_t long_s = short_s * 3;
-    
+
     const uint16_t pause_s = short_s;     /* symbole */
     const uint16_t pause_c = long_s - pause_s;      /* character */
     const uint16_t pause_w = (short_s * 7) - pause_s; /* word */
-    
+
     size_t n = 0;
-    
+
     for(n = 0; n < 3; ++n)
     {
         beeper_on();
@@ -60,10 +60,9 @@ void sos(void)
         beeper_off();
         _delay_ms(pause_s);
     }
-    
+
     _delay_ms(pause_c);
-    
-    
+
     for(n = 0; n < 3; ++n)
     {
         beeper_on();
@@ -71,9 +70,9 @@ void sos(void)
         beeper_off();
         _delay_ms(pause_s);
     }
-     
+
     _delay_ms(pause_c);
-    
+
     for(n = 0; n < 3; ++n)
     {
         beeper_on();
@@ -81,7 +80,7 @@ void sos(void)
         beeper_off();
         _delay_ms(pause_s);
     }
-    
+
     _delay_ms(pause_w);
 }
 
@@ -92,16 +91,16 @@ void watch_dog(void)
     {
         /* delete watch dog reset flag */
         MCUCSR &= ~(1<<WDRF);
-        
+
         /* communicate error state */
         PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
-       
+
         while(1)
         {
             sos();
         }
     }
-    
+
     wdt_enable(WDTO_1S);
 }
 
@@ -109,15 +108,15 @@ void ntostr(char *result, uint8_t n)
 {
     /* max val "255" + \0  = 4 chars*/
     char buf[4];
-    
+
     itoa(n,buf,10);
-    
+
     if(n<10)
     {
         result[0] = ' ';
         result[1] = buf[0];
     }
-    else        
+    else
         strncpy(result,buf,2);
 }
 
@@ -172,16 +171,16 @@ void sseg_set_last_goal_dots(void)
     {
         uint8_t dots = 0;
         size_t n = 0;
-        
+
         for(n = 0; n < NUM_GOALS; ++n)
         {
             dots <<= 2;
             if(last_goal == n)
-            {    
+            {
                 dots |= 0b00000010;
             }
         }
-        
+
         seven_seg_set_dot(&sseg, dots);
     }
 }
@@ -190,14 +189,14 @@ void sseg_display_goals(void)
 {
     char stext[NUM_DISPLAY_ELEMENTS];
     size_t n = 0;
-    
+
     for(n = 0; n < NUM_GOALS; ++n)
     {
         ntostr(stext+n*DISPLAY_ELEMENTS_PER_GOAL, goals[n]);
     }
-    
+
     seven_seg_set_chr(&sseg, stext);
-    
+
     if(!locked)
     {
         sseg_set_last_goal_dots();
@@ -224,7 +223,7 @@ void decgoal(void *p)
 
 /* Timer 0 interrupt vector, called every 1 ms */
 ISR (TIMER0_COMP_vect)
-{    
+{
     if(beeper)
     {
         --beeper;
@@ -233,7 +232,7 @@ ISR (TIMER0_COMP_vect)
             beeper_off();
         }
     }
-    
+
     if(locked)
     {
         --locked;
@@ -259,7 +258,7 @@ void game_end(void)
 {
     seven_seg_set_chr(&sseg, "Ende");
     seven_seg_set_dot(&sseg, 0x0);
-    
+
     if(settings()->beeper && (settings()->beep_time > 0))
     {
         beeper_on();
@@ -270,7 +269,7 @@ void game_end(void)
         loop_display(((uint16_t) settings()->beep_time) * 100);
         beeper_off();
     }
-    
+
     switch_buttons(&end_buttons);
 }
 
@@ -284,15 +283,15 @@ void count_goal(size_t goal)
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         incgoal(goal);
-        
+
         if(goals[goal] >= settings()->goals_per_round)
         {
             game_end();
             return;
         }
-        
+
         activate_beep();
-        
+
         if(settings()->lock_time > 0)
         {
             seven_seg_set_dot(&sseg, 0b1111);
@@ -315,7 +314,6 @@ void goal(void *p)
             if(!locked)
             {
                 last_goal = p;
-                
                 if(settings()->bouncer_time)
                 {
                     bouncer = ((uint16_t) settings()->bouncer_time) * 10;
@@ -326,20 +324,20 @@ void goal(void *p)
                 }
             }
         }
-    }   
+    }
 }
 
 void self_test()
-{    
+{
     uart_buf_puts("Hello!\n");
-    
+
     seven_seg_set_chr(&sseg, "8888");
     seven_seg_set_dot(&sseg, 0b1111);
     PORTC &= ~(1<<CONF_LED_PIN); /* err LED on */
     beeper_on();
 
     loop_display(500);
-    
+
     sseg_display_goals();
     seven_seg_set_dot(&sseg, 0);
     beeper_off();
@@ -407,7 +405,7 @@ void menu_entry_start(void *p)
         locked  = 0;
         bouncer = 0;
     }
-    
+
     switch_to_game(NULL);
 }
 
@@ -419,19 +417,19 @@ int main(void)
     shift_reg reg;
 
     settings_read();
-    
+
      /* unused */
     DDRA  = 0x0;
     PORTA = 0x0;
-    
+
     /* ISP & buttons */
     DDRB  = 0x0;
     PORTB = 0x0;
-    
+
     /* err LED, shift reg, element driver */
     DDRC  = 0xff;
     PORTC = 0x0;
-    
+
     /* beeper, unused driver pins, uart (PD0, PD1), light barriers (PD2, PD3) */
     DDRD  = 0b11110000;
 #if CONF_GOAL_PULL_UPS_ENABLED == TRUE
@@ -439,19 +437,19 @@ int main(void)
 #else
     PORTD = 0x0;
 #endif
-   
+
     /* Watch Dog */
     watch_dog();
-       
+
     /* Init */
     uart_init(UBRR_VALUE);
-    
+
     button_init(&game_buttons);
     button_init(&menu_buttons);
-    
-    shift_reg_init(&reg, &CONF_SHIFT_REG_PORT, CONF_SHIFT_REG_SER_PIN, CONF_SHIFT_REG_SCK_PIN, CONF_SHIFT_REG_RCK_PIN);    
+
+    shift_reg_init(&reg, &CONF_SHIFT_REG_PORT, CONF_SHIFT_REG_SER_PIN, CONF_SHIFT_REG_SCK_PIN, CONF_SHIFT_REG_RCK_PIN);
     seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, CONF_SSEG_INVERT);
-    
+
     /* self test */
     self_test();
 
@@ -461,18 +459,18 @@ int main(void)
 
     button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_0, decgoal, 0);
     button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_1, incgoal, 0);
-    
+
     button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_menu, NULL);
-    
+
     button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_3, decgoal, 1);
     button_add(&game_buttons, &PINB, CONF_BUTTON_PIN_4, incgoal, 1);
 
     /* Configure menu buttons */
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_0, chg_menu_idx, -1);
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_1, chg_menu_idx, +1);
-    
+
     button_add(&menu_buttons, &PINB, CONF_BUTTON_PIN_2, switch_to_game, NULL);
-    
+
     /* Configure game end buttons */
     button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_0, end_game_end, NULL);
     button_add(&end_buttons, &PINB, CONF_BUTTON_PIN_1, end_game_end, NULL);
@@ -500,7 +498,7 @@ int main(void)
     menu_entry_add_int(&entries, "Bt", MIN_BEEP_TIME,         MAX_BEEP_TIME,                0b10,                         &settings()->beep_time);
     /* Resets to default */
     menu_entry_add    (&entries, "Re", menu_entry_get_go,     settings_reset,               settings_reset,               NULL);
-    
+
     /* Start new game. */
     menu_entry_start(NULL);
 
@@ -511,11 +509,11 @@ int main(void)
     TIMSK |= (1<<OCIE0); /* activate timer */
 
     sei();
-    
+
     while(1)
     {
         wdt_reset();
-        
+
         button_poll(active_buttons);
 
         if(ud > 3)

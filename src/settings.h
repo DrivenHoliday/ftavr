@@ -24,16 +24,16 @@
 struct settings_s
 {
     uint8_t goals_per_round;
-    
+
     /* Defines if beeper is activated (overrides beep_time) */
     boolean beeper;
-    
+
     /* time in 100 ms steps */
     uint8_t beep_time;
-    
+
     /* time in 100 ms steps */
     uint8_t lock_time;
-    
+
     /* time in 10 ms steps */
     uint8_t bouncer_time;
 };

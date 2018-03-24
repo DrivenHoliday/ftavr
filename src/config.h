@@ -19,9 +19,9 @@
  * B /  D /
  *  /____/G
  *    A   # P
- * 
+ *
  * {P,A,B,C,D,E,F,G}
- * 
+ *
  */
 #define CONF_DISPLAY_CONVERT_TABLE {6,5,3,1,2,0,7,4}
 
@@ -65,9 +65,9 @@
  * B /  D /
  *  /____/G
  *    A   # P
- * 
+ *
  * {P,A,B,C,D,E,F,G}
- * 
+ *
  */
 #define CONF_DISPLAY_CONVERT_TABLE {6,3,7,4,2,1,0,5}
 
