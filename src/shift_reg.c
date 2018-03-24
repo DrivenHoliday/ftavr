@@ -16,32 +16,21 @@ static void pulse(mc_port port, mc_pin pin)
     *port &= ~pin;
 }
 
-static void set(shift_reg *reg, uint8_t b)
-{
-    if(!b)
-    {
-        *reg->port |= reg->ser;
-    }
-    else
-    {
-        *reg->port &= ~reg->ser;
-    }
-
-    pulse(reg->port, reg->sck);
-}
-
 void shift_reg_write(shift_reg *reg, uint8_t value)
 {
     *reg->port &= ~( reg->ser | reg->sck | reg->rck );
 
-    set(reg,value&128);
-    set(reg,value&64);
-    set(reg,value&32);
-    set(reg,value&16);
-    set(reg,value&8);
-    set(reg,value&4);
-    set(reg,value&2);
-    set(reg,value&1);
+    for (uint8_t mask = 0x80; mask > 0; mask >>= 1) {
+        if (value & mask)
+        {
+            *reg->port &= ~reg->ser;
+        }
+        else
+        {
+            *reg->port |= reg->ser;
+        }
+        pulse(reg->port, reg->sck);
+    }
 
     pulse(reg->port, reg->rck);
 }
