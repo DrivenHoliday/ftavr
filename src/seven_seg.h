@@ -22,8 +22,6 @@ struct seven_seg_s
     shift_reg *seg_ano;
     mc_pin seg_cat[SEVEN_SEG_MAX_NUM_ELEM];
 
-    uint8_t table[8];
-
     boolean inverted;
 
     //private
@@ -33,7 +31,7 @@ struct seven_seg_s
 
 typedef struct seven_seg_s seven_seg;
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[], boolean inverted);
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], boolean inverted);
 
 void seven_seg_set_chr(seven_seg *sseg, char val[]);
 void seven_seg_set_raw(seven_seg *sseg, uint8_t val[]);

@@ -7,10 +7,11 @@
 
 #include <util/delay.h>
 
-static uint8_t char_to_generic(char c);
-static uint8_t convert(uint8_t v, seven_seg *sseg);
+#include "config.h"
 
-void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], uint8_t table[], boolean inverted)
+static uint8_t char_to_generic(char c);
+
+void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *seg_ano, mc_pin seg_cat[], boolean inverted)
 {
     size_t n=0;
 
@@ -21,7 +22,6 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *s
     sseg->port = port;
     sseg->seg_ano = seg_ano;
     sseg->inverted = inverted;
-    memcpy(sseg->table, table, sizeof(sseg->table));
 
     /* set private */
     sseg->curr = 0;
@@ -38,7 +38,7 @@ void seven_seg_set_chr(seven_seg *sseg, char val[])
 {
     for(size_t n = 0; n < sseg->num_seg; ++n)
     {
-        sseg->val[n] = convert(char_to_generic(val[n]), sseg);
+        sseg->val[n] = char_to_generic(val[n]);
     }
 }
 
@@ -50,7 +50,7 @@ void seven_seg_set_raw(seven_seg *sseg, uint8_t val[])
 void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
 {
     int8_t n = sseg->num_seg - 1;
-    const uint8_t dot = convert(0b10000000, sseg);
+    const uint8_t dot = CONVERT_SEGMENT(0b10000000);
 
     for(;n >= 0; --n)
     {
@@ -96,6 +96,8 @@ void seven_seg_loop(seven_seg *sseg)
  * B /  D /
  *  /____/G
  *    A   # P
+ *
+ * It already applies the conversion to the specific configured mapping.
  */
 /*
  * Not supported chars:
@@ -106,84 +108,63 @@ static uint8_t char_to_generic(char c)
     switch (c)
     {
         case 'a' :
-        case 'A' : return 0b00111111;
+        case 'A' : return CONVERT_SEGMENT(0b00111111);
         case 'b' :
-        case 'B' : return 0b01111001;
+        case 'B' : return CONVERT_SEGMENT(0b01111001);
         case 'c' :
-        case 'C' : return 0b01101000;
+        case 'C' : return CONVERT_SEGMENT(0b01101000);
         case 'd' :
-        case 'D' : return 0b01101011;
+        case 'D' : return CONVERT_SEGMENT(0b01101011);
         case 'e' :
-        case 'E' : return 0b01111100;
+        case 'E' : return CONVERT_SEGMENT(0b01111100);
         case 'f' :
-        case 'F' : return 0b00111100;
+        case 'F' : return CONVERT_SEGMENT(0b00111100);
         case 'g' :
-        case 'G' : return 0b01110101;
-        case 'h' : return 0b00111001;
-        case 'H' : return 0b00111011;
-        case 'i' : return 0b00000001;
-        case 'I' : return 0b01100000;
-        case 'j' : return 0b01000011;
-        case 'J' : return 0b01100011;
+        case 'G' : return CONVERT_SEGMENT(0b01110101);
+        case 'h' : return CONVERT_SEGMENT(0b00111001);
+        case 'H' : return CONVERT_SEGMENT(0b00111011);
+        case 'i' : return CONVERT_SEGMENT(0b00000001);
+        case 'I' : return CONVERT_SEGMENT(0b01100000);
+        case 'j' : return CONVERT_SEGMENT(0b01000011);
+        case 'J' : return CONVERT_SEGMENT(0b01100011);
         // k / K
         case 'l' :
-        case 'L' : return 0b01110000;
+        case 'L' : return CONVERT_SEGMENT(0b01110000);
         // m / M
         case 'n' :
-        case 'N' : return 0b00101001;
+        case 'N' : return CONVERT_SEGMENT(0b00101001);
         case 'o' :
-        case 'O' : return 0b01101001;
+        case 'O' : return CONVERT_SEGMENT(0b01101001);
         case 'p' :
-        case 'P' : return 0b00111110;
+        case 'P' : return CONVERT_SEGMENT(0b00111110);
         // q / Q
         case 'r' :
-        case 'R' : return 0b00101000;
+        case 'R' : return CONVERT_SEGMENT(0b00101000);
         // s / S
         case 't' :
-        case 'T' : return 0b01111000;
-        case 'u' : return 0b01100001;
-        case 'U' : return 0b01110011;
+        case 'T' : return CONVERT_SEGMENT(0b01111000);
+        case 'u' : return CONVERT_SEGMENT(0b01100001);
+        case 'U' : return CONVERT_SEGMENT(0b01110011);
         // v / V
         // w / W
         // x / X
         case 'y' :
-        case 'Y' : return 0b00011011;
+        case 'Y' : return CONVERT_SEGMENT(0b00011011);
         // z / Z
-        case '0' : return 0b01110111;
-        case '1' : return 0b00000011;
-        case '2' : return 0b01101110;
-        case '3' : return 0b01001111;
-        case '4' : return 0b00011011;
-        case '5' : return 0b01011101;
-        case '6' : return 0b01111101;
-        case '7' : return 0b00000111;
-        case '8' : return 0b01111111;
-        case '9' : return 0b01011111;
-        case '?' : return 0b00101110;
-        case '-' : return 0b00001000;
-        case '_' : return 0b01000000;
+        case '0' : return CONVERT_SEGMENT(0b01110111);
+        case '1' : return CONVERT_SEGMENT(0b00000011);
+        case '2' : return CONVERT_SEGMENT(0b01101110);
+        case '3' : return CONVERT_SEGMENT(0b01001111);
+        case '4' : return CONVERT_SEGMENT(0b00011011);
+        case '5' : return CONVERT_SEGMENT(0b01011101);
+        case '6' : return CONVERT_SEGMENT(0b01111101);
+        case '7' : return CONVERT_SEGMENT(0b00000111);
+        case '8' : return CONVERT_SEGMENT(0b01111111);
+        case '9' : return CONVERT_SEGMENT(0b01011111);
+        case '?' : return CONVERT_SEGMENT(0b00101110);
+        case '-' : return CONVERT_SEGMENT(0b00001000);
+        case '_' : return CONVERT_SEGMENT(0b01000000);
         // Not supported char
         default : return 0;
     }
-}
-
-static uint8_t convert(uint8_t v, seven_seg *sseg)
-{
-    uint8_t result = 0;
-    uint8_t mask = 128;
-    size_t n = 0;
-
-    if(v)
-    {
-        for(;n < 8; ++n)
-        {
-            if(v & mask)
-            {
-                result |= (128 >> sseg->table[n]);
-            }
-            mask >>= 1;
-        }
-    }
-
-    return result;
 }

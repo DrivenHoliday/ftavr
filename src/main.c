@@ -412,7 +412,6 @@ void menu_entry_start(void *p)
 int main(void)
 {
     const mc_pin seg_cat[] = CONF_DISPLAY_ELEMENT_PINS;
-    const uint8_t display_convert_table[] = CONF_DISPLAY_CONVERT_TABLE;
 
     shift_reg reg;
 
@@ -448,7 +447,7 @@ int main(void)
     button_init(&menu_buttons);
 
     shift_reg_init(&reg, &CONF_SHIFT_REG_PORT, CONF_SHIFT_REG_SER_PIN, CONF_SHIFT_REG_SCK_PIN, CONF_SHIFT_REG_RCK_PIN);
-    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, display_convert_table, CONF_SSEG_INVERT);
+    seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, CONF_SSEG_INVERT);
 
     /* self test */
     self_test();

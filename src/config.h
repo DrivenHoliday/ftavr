@@ -8,6 +8,19 @@
 #define LOW        (1)
 #define HIGH       (2)
 
+// Maps the generic 8 bit pattern for the 7 segment display
+// to the specific one of the circuit board
+#define CONVERT_SEGMENT(v) (\
+    (((v >> 7) & 0x01) << (7 - CONF_DISPLAY_CONVERT_P)) | \
+    (((v >> 6) & 0x01) << (7 - CONF_DISPLAY_CONVERT_A)) | \
+    (((v >> 5) & 0x01) << (7 - CONF_DISPLAY_CONVERT_B)) | \
+    (((v >> 4) & 0x01) << (7 - CONF_DISPLAY_CONVERT_C)) | \
+    (((v >> 3) & 0x01) << (7 - CONF_DISPLAY_CONVERT_D)) | \
+    (((v >> 2) & 0x01) << (7 - CONF_DISPLAY_CONVERT_E)) | \
+    (((v >> 1) & 0x01) << (7 - CONF_DISPLAY_CONVERT_F)) | \
+    (( v       & 0x01) << (7 - CONF_DISPLAY_CONVERT_G))   \
+    )
+
 #define CONF_CURRENT BROCKEL
 
 #if CONF_CURRENT == BROCKEL
@@ -23,7 +36,14 @@
  * {P,A,B,C,D,E,F,G}
  *
  */
-#define CONF_DISPLAY_CONVERT_TABLE {6,5,3,1,2,0,7,4}
+#define CONF_DISPLAY_CONVERT_P 6
+#define CONF_DISPLAY_CONVERT_A 5
+#define CONF_DISPLAY_CONVERT_B 3
+#define CONF_DISPLAY_CONVERT_C 1
+#define CONF_DISPLAY_CONVERT_D 2
+#define CONF_DISPLAY_CONVERT_E 0
+#define CONF_DISPLAY_CONVERT_F 7
+#define CONF_DISPLAY_CONVERT_G 4
 
 /* PORTC only */
 #define CONF_DISPLAY_ELEMENT_PINS {PC0, PC1, PC3, PC4}
@@ -69,7 +89,14 @@
  * {P,A,B,C,D,E,F,G}
  *
  */
-#define CONF_DISPLAY_CONVERT_TABLE {6,3,7,4,2,1,0,5}
+#define CONF_DISPLAY_CONVERT_P 6
+#define CONF_DISPLAY_CONVERT_A 3
+#define CONF_DISPLAY_CONVERT_B 7
+#define CONF_DISPLAY_CONVERT_C 4
+#define CONF_DISPLAY_CONVERT_D 2
+#define CONF_DISPLAY_CONVERT_E 1
+#define CONF_DISPLAY_CONVERT_F 0
+#define CONF_DISPLAY_CONVERT_G 5
 
 /* PORTC only */
 #define CONF_DISPLAY_ELEMENT_PINS {PC3, PC4, PC5, PC6}
