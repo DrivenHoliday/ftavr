@@ -21,8 +21,6 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *s
     sseg->port = port;
     sseg->seg_ano = seg_ano;
     sseg->inverted = inverted;
-    memset(sseg->seg_cat, 0, sizeof(sseg->seg_cat));
-    memcpy(sseg->seg_cat, seg_cat, num_seg);
     memcpy(sseg->table, table, sizeof(sseg->table));
 
     /* set private */
@@ -31,7 +29,8 @@ void seven_seg_init(seven_seg *sseg, uint8_t num_seg, mc_port port, shift_reg *s
 
     for(;n<sseg->num_seg;++n)
     {
-        *sseg->port &= ~(1<<sseg->seg_cat[n]);
+        sseg->seg_cat[n] = 1 << seg_cat[n];
+        *sseg->port &= ~sseg->seg_cat[n];
     }
 }
 
@@ -71,7 +70,7 @@ void seven_seg_set_dot(seven_seg *sseg, uint8_t dots)
 void seven_seg_loop(seven_seg *sseg)
 {
     /* current element off */
-    *sseg->port &= ~(1<<sseg->seg_cat[sseg->curr]);
+    *sseg->port &= ~sseg->seg_cat[sseg->curr];
 
     /* next element */
     sseg->curr = (sseg->curr + 1) % sseg->num_seg;
@@ -83,7 +82,7 @@ void seven_seg_loop(seven_seg *sseg)
     shift_reg_write(sseg->seg_ano,val);
 
     /* next element on */
-    *sseg->port |= (1<<sseg->seg_cat[sseg->curr]);
+    *sseg->port |= sseg->seg_cat[sseg->curr];
 }
 
 /**
