@@ -21,7 +21,7 @@ struct settings_s* settings(void)
 #define BETWEEN(var,min,max) \
     ((var >= min) && (var <= max))
 
-static boolean settings_valid()
+static boolean settings_valid(void)
 {
     if( BETWEEN(settings()->goals_per_round, MIN_GOALS_PER_ROUND, MAX_GOALS_PER_ROUND) &&
         BETWEEN(settings()->beep_time,       MIN_BEEP_TIME,       MAX_BEEP_TIME) &&

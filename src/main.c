@@ -42,6 +42,26 @@ static volatile uint16_t bouncer = 0;
 
 static volatile uint8_t ud = 0;
 
+static char bool_options[BOOL_LENGTH][3] = {"of", "on"};
+
+void beeper_on(void)
+{
+#if CONF_BEEPER_ON == LOW
+    PORTD &= ~(1<<CONF_BEEPER_PIN);
+#else
+    PORTD |= (1<<CONF_BEEPER_PIN);
+#endif
+}
+
+void beeper_off(void)
+{
+#if CONF_BEEPER_ON == LOW
+   PORTD |= (1<<CONF_BEEPER_PIN);
+#else
+    PORTD &= ~(1<<CONF_BEEPER_PIN);
+#endif
+}
+
 void sos(void)
 {
     const uint16_t short_s = 120;
@@ -135,24 +155,6 @@ void loop_display(uint16_t ms)
     }
 }
 
-void beeper_on(void)
-{
-#if CONF_BEEPER_ON == LOW
-    PORTD &= ~(1<<CONF_BEEPER_PIN);
-#else
-    PORTD |= (1<<CONF_BEEPER_PIN);
-#endif
-}
-
-void beeper_off(void)
-{
-#if CONF_BEEPER_ON == LOW
-   PORTD |= (1<<CONF_BEEPER_PIN);
-#else
-    PORTD &= ~(1<<CONF_BEEPER_PIN);
-#endif
-}
-
 void activate_beep(void)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -221,37 +223,23 @@ void decgoal(void *p)
     }
 }
 
-/* Timer 0 interrupt vector, called every 1 ms */
-ISR (TIMER0_COMP_vect)
+void switch_buttons(button *succ)
 {
-    if(beeper)
-    {
-        --beeper;
-        if(!beeper)
-        {
-            beeper_off();
-        }
-    }
+    button_poll_action(succ, FALSE);
+    active_buttons = succ;
+}
 
-    if(locked)
-    {
-        --locked;
-        if (!locked)
-        {
-            sseg_set_last_goal_dots();
-        }
-    }
+void switch_to_menu(void *p)
+{
+    switch_buttons(&menu_buttons);
+    menu_entry_display_entry(&entries, &sseg, 0);
+}
 
-    if(bouncer)
-    {
-        --bouncer;
-        if (!bouncer)
-        {
-            count_goal(last_goal);
-        }
-    }
-
-    ++ud;
+void switch_to_game(void *p)
+{
+    switch_buttons(&game_buttons);
+    settings_write();
+    sseg_display_goals();
 }
 
 void game_end(void)
@@ -304,6 +292,8 @@ void goal(void *p)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
+        size_t goal = (size_t) p;
+
         /* bounce detected */
         if(bouncer)
         {
@@ -313,21 +303,22 @@ void goal(void *p)
         {
             if(!locked)
             {
-                last_goal = p;
+                last_goal = goal;
+
                 if(settings()->bouncer_time)
                 {
                     bouncer = ((uint16_t) settings()->bouncer_time) * 10;
                 }
                 else
                 {
-                    count_goal(p);
+                    count_goal(goal);
                 }
             }
         }
     }
 }
 
-void self_test()
+void self_test(void)
 {
     uart_buf_puts("Hello!\n");
 
@@ -348,25 +339,6 @@ void chg_menu_idx(void *p)
 {
     menu_entry_chg_select(&entries, (int8_t) p);
     menu_entry_display(&entries, &sseg);
-}
-
-void switch_buttons(button *succ)
-{
-    button_poll_action(succ, FALSE);
-    active_buttons = succ;
-}
-
-void switch_to_menu(void *p)
-{
-    switch_buttons(&menu_buttons);
-    menu_entry_display_entry(&entries, &sseg, 0);
-}
-
-void switch_to_game(void *p)
-{
-    switch_buttons(&game_buttons);
-    settings_write();
-    sseg_display_goals();
 }
 
 void menu_entry_value_bool_toogle(void *p)
@@ -524,4 +496,37 @@ int main(void)
 
     /* wird nie erreicht */
     return 0;
+}
+
+/* Timer 0 interrupt vector, called every 1 ms */
+ISR (TIMER0_COMP_vect)
+{
+    if(beeper)
+    {
+        --beeper;
+        if(!beeper)
+        {
+            beeper_off();
+        }
+    }
+
+    if(locked)
+    {
+        --locked;
+        if (!locked)
+        {
+            sseg_set_last_goal_dots();
+        }
+    }
+
+    if(bouncer)
+    {
+        --bouncer;
+        if (!bouncer)
+        {
+            count_goal(last_goal);
+        }
+    }
+
+    ++ud;
 }

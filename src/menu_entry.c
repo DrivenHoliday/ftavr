@@ -24,7 +24,7 @@ static void chg_value_pl(int_payload *payload, int8_t change)
 
 void menu_entry_init(menu_entries *entries, void_func error_func, seven_seg *sseg)
 {
-    memset(entries, 0, sizeof(entries));
+    memset(entries, 0, sizeof(*entries));
     entries->error_func = error_func;
     entries->sseg = sseg;
 }
