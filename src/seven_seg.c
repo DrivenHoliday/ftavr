@@ -161,6 +161,8 @@ static uint8_t char_to_generic(char c)
         case '8' : return 0b01111111;
         case '9' : return 0b01011111;
         case '?' : return 0b00101110;
+        case '-' : return 0b00001000;
+        case '_' : return 0b01000000;
         // Not supported char
         default : return 0;
     }
