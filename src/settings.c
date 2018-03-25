@@ -2,7 +2,15 @@
 
 #include <avr/eeprom.h>
 
-struct settings_s ee_settings EEMEM;
+#define DEFAULT_STRUCT { \
+    .goals_per_round = DEFAULT_GOALS_PER_ROUND, \
+    .beeper          = DEFAULT_BEEPER, \
+    .beep_time       = DEFAULT_BEEP_TIME, \
+    .lock_time       = DEFAULT_LOCK_TIME, \
+    .bouncer_time    = DEFAULT_BOUNCER_TIME, \
+}
+
+struct settings_s ee_settings EEMEM = DEFAULT_STRUCT;
 
 struct settings_s* settings(void)
 {
