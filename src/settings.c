@@ -40,7 +40,7 @@ void settings_read(void)
 
 void settings_write(void)
 {
-    eeprom_write_block(settings(), &ee_settings, sizeof(ee_settings));
+    eeprom_update_block(settings(), &ee_settings, sizeof(ee_settings));
 }
 
 void settings_reset(void)
