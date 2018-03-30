@@ -417,6 +417,7 @@ int main(void)
 
     button_init(&game_buttons);
     button_init(&menu_buttons);
+    button_init(&end_buttons);
 
     shift_reg_init(&reg, &CONF_SHIFT_REG_PORT, CONF_SHIFT_REG_SER_PIN, CONF_SHIFT_REG_SCK_PIN, CONF_SHIFT_REG_RCK_PIN);
     seven_seg_init(&sseg, NUM_DISPLAY_ELEMENTS, &PORTC, &reg, seg_cat, CONF_SSEG_INVERT);
