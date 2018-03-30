@@ -477,7 +477,7 @@ int main(void)
     /* Configure timer 0 */
     TCCR0 |= (1 << WGM01); /* CTC mode */
     TCCR0 |= (1 << CS00) | (1 << CS01); /* Prescaler 64 */
-    OCR0 = 249; /* ((16000000/64)/1000) = 250; decreased by one due of starting with zero */
+    OCR0 = (F_CPU) / 64 / 1000 - 1; /* decreased by one due of starting with zero */
     TIMSK |= (1<<OCIE0); /* activate timer */
 
     sei();
