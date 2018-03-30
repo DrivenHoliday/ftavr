@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <string.h>
 
+#define BUTTON_STATUS(button) (*(button).port & (button).pin)
+
 void button_init(button_list *butt)
 {
     memset(butt, 0, sizeof(button_list));
@@ -10,11 +12,12 @@ void button_init(button_list *butt)
 
 void button_add(button_list *butt, mc_port port, mc_pin pin, button_func func, void *payload)
 {
-    butt->buttons[butt->num].port = port;
-    butt->buttons[butt->num].pin = pin;
-    butt->buttons[butt->num].func = func;
-    butt->buttons[butt->num].payload = payload;
-    butt->buttons[butt->num].status = (*butt->buttons[butt->num].port & (1<<butt->buttons[butt->num].pin));
+    struct button_s *new_button = &butt->buttons[butt->num];
+    new_button->port = port;
+    new_button->pin = 1 << pin;
+    new_button->func = func;
+    new_button->payload = payload;
+    new_button->status = BUTTON_STATUS(*new_button);
 
     ++butt->num;
     assert(butt->num <= BUTTON_MAX_NUM_BUTTON);
@@ -27,7 +30,7 @@ void button_poll_action(button_list *butt, boolean action)
 
     for(;n < butt->num; ++n)
     {
-        curr = *butt->buttons[n].port & (1<<butt->buttons[n].pin);
+        curr = BUTTON_STATUS(butt->buttons[n]);
         if(curr && !butt->buttons[n].status && action)
         {
             (*butt->buttons[n].func)(butt->buttons[n].payload);
