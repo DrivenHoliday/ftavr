@@ -25,10 +25,10 @@
 #define DISPLAY_ELEMENTS_PER_GOAL (2)
 #define NUM_DISPLAY_ELEMENTS (NUM_GOALS*DISPLAY_ELEMENTS_PER_GOAL)
 
-static button game_buttons;
-static button menu_buttons;
-static button end_buttons;
-static button *active_buttons = NULL;
+static button_list game_buttons;
+static button_list menu_buttons;
+static button_list end_buttons;
+static button_list *active_buttons = NULL;
 static menu_entries entries;
 
 static seven_seg sseg;
@@ -223,7 +223,7 @@ void decgoal(void *p)
     }
 }
 
-void switch_buttons(button *succ)
+void switch_buttons(button_list *succ)
 {
     button_poll_action(succ, FALSE);
     active_buttons = succ;

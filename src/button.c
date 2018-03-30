@@ -3,12 +3,12 @@
 #include <assert.h>
 #include <string.h>
 
-void button_init(button *butt)
+void button_init(button_list *butt)
 {
-    memset(butt, 0, sizeof(button));
+    memset(butt, 0, sizeof(button_list));
 }
 
-void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *payload)
+void button_add(button_list *butt, mc_port port, mc_pin pin, button_func func, void *payload)
 {
     butt->buttons[butt->num].port = port;
     butt->buttons[butt->num].pin = pin;
@@ -20,7 +20,7 @@ void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *
     assert(butt->num <= BUTTON_MAX_NUM_BUTTON);
 }
 
-void button_poll_action(button *butt, boolean action)
+void button_poll_action(button_list *butt, boolean action)
 {
     size_t n = 0;
     boolean curr;
@@ -36,7 +36,7 @@ void button_poll_action(button *butt, boolean action)
     }
 }
 
-void button_poll(button *butt)
+void button_poll(button_list *butt)
 {
     button_poll_action(butt, TRUE);
 }

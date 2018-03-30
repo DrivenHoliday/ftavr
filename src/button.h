@@ -11,7 +11,7 @@
 
 typedef void(*button_func)(void*);
 
-struct button_single_button_s
+struct button_s
 {
     mc_port port;
     mc_pin pin;
@@ -20,17 +20,16 @@ struct button_single_button_s
     boolean status;
 };
 
-struct button_s
+typedef struct button_list_s
 {
-    struct button_single_button_s buttons[BUTTON_MAX_NUM_BUTTON];
+    struct button_s buttons[BUTTON_MAX_NUM_BUTTON];
     size_t num;
-};
+} button_list;
 
-typedef struct button_s button;
 
-void button_init(button *butt);
-void button_add(button *butt, mc_port port, mc_pin pin, button_func func, void *payload);
-void button_poll(button *butt);
-void button_poll_action(button *butt, boolean action);
+void button_init(button_list *butt);
+void button_add(button_list *butt, mc_port port, mc_pin pin, button_func func, void *payload);
+void button_poll(button_list *butt);
+void button_poll_action(button_list *butt, boolean action);
 
 #endif

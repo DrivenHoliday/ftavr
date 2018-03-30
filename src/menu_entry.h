@@ -53,7 +53,7 @@ void menu_entry_right_click(menu_entries *entries);
 void menu_entry_display(menu_entries *entries, seven_seg *sseg);
 void menu_entry_display_entry(menu_entries *entries, seven_seg *sseg, size_t sel);
 
-void menu_entry_button_left(menu_entries *entries, button *butt, mc_port port, mc_pin pin);
-void menu_entry_button_right(menu_entries *entries, button *butt, mc_port port, mc_pin pin);
+void menu_entry_button_left(menu_entries *entries, button_list *butt, mc_port port, mc_pin pin);
+void menu_entry_button_right(menu_entries *entries, button_list *butt, mc_port port, mc_pin pin);
 
 #endif
